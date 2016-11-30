@@ -1,3 +1,8 @@
+/*******************************************************************************/
+/*Projekt:Implementace interpretu imperativniho jazyka IFJ2016                                                             */
+/*Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar*/
+/*Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    */
+/*******************************************************************************/
 #ifndef __ERROR_H_INCLUDED
 #define __ERROR_H_INCLUDED
 /* Draft for error-related header file */

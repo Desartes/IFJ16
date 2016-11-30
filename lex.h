@@ -1,7 +1,7 @@
 /*******************************************************************************/
-/*Projekt:Implementace interpretu imperativniho jazykaIFJ2016       											           */
+/*Projekt:Implementace interpretu imperativniho jazyka IFJ2016       											           */
 /*Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar*/
-/*Loginy riesitelov: xnechu01, xkulda00, xlukes06, xjasen00                    */
+/*Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    */
 /*******************************************************************************/
 #include "string.h"
 

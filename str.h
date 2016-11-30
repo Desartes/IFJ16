@@ -1,3 +1,8 @@
+/*******************************************************************************/
+/*Projekt:Implementace interpretu imperativniho jazyka IFJ2016       											           */
+/*Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar*/
+/*Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    */
+/*******************************************************************************/
 //hlavickovy soubor pro praci s nekonecne dlouhymi retezci
 
 typedef struct
