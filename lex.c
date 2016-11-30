@@ -8,7 +8,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "instrlist.h"
+#include "ilist.h"
 #include "string.h"
 #include "lex.h"
 #include "err.h"
@@ -25,7 +25,7 @@ typedef struct token_t {
 token_t *t_buff ;
 
 
-void setSourceFile(FILE *f)
+void setfileFile(FILE *f)
 {
   file = f;
 }
@@ -157,7 +157,7 @@ case 0: //Stav na zaciatku
 
       if (isspace(c)) state = 0; // Odignuruje biele miesta ale zostane tu
 
-		else if (c == '/') { quote_count = 1; state = 8; }
+		else if (c == '/') { count_queue = 1; state = 8; }
 			else if (c == '"'){ // jedna se o zaciatok retazca
 
         state = 4; // preskoc do stavu pro zpracovani retazca
@@ -174,7 +174,7 @@ case 0: //Stav na zaciatku
 	//Ostatne znaky
 	  else if (c == '+') { plus_count = 1; state = 8;}
 	 else if (c == '-') { minus_count = 1; state = 8;}
-	 else if (c == '*' && quote_count == 0) { return MUL; }
+	 else if (c == '*' && count_queue == 0) { return MUL; }
 	 else if (c == '<') { less_count = 1; state = 8;}
 	 else if (c == '>') { great_count = 1; state = 8;}
 	 else if (c == '=') { eq_count = 1; state = 8;}
@@ -199,9 +199,9 @@ case 2: // BLOKOVY KOMENTAR
 
         if (c != '*' && c!= '/') { state = 2;} // odignorovanie vnutra komentaru
 
-        else if (c == '*') { star_count = 1; state = 2;} // eviduj hviezdu a zostan tu
+        else if (c == '*') { count_stars = 1; state = 2;} // eviduj hviezdu a zostan tu
 
-        else if (c == '/' && star_count == 1) { star_count = 0; state = 0;} //koniec blokoveho komentaru vrat sa do stavu 0
+        else if (c == '/' && count_stars == 1) { count_stars = 0; state = 0;} //koniec blokoveho komentaru vrat sa do stavu 0
 
         else if (c == EOF) {return ERR_LEX_ERR;} //Ak nenarazi na koniec komentaru ERR_LEX_ERR
 
@@ -210,9 +210,9 @@ break;
 
         if (isalnum(c) || c == '_' || c == '$' || c == '.'){ // pridana tecka jako znak pouzivany pro plne kvalifikovany identifikator
 
-        if (c == '.' && dot_count == 0) dot_count++; //Ak naslo bodku inkrementuje dot_count
+        if (c == '.' && count_dot == 0) count_dot++; //Ak naslo bodku inkrementuje count_dot
 
-        else if (c == '.' && dot_count > 0 ) {return LEX_ERROR; break;} //Ak najde dalsiu jedna sa o neplatnz identifikator
+        else if (c == '.' && count_dot > 0 ) {return ERR_LEX_ERR; break;} //Ak najde dalsiu jedna sa o neplatnz identifikator
 
 		strAddChar(buffer, c); // Ak sa jedna o identifikator alebo klucove slovo naplnime strukturu
  		state = 3; // Zostane tu a riesi dalej ident. a keywords
@@ -221,9 +221,9 @@ break;
 
 	    else {// struktura naplnena, nasleduje prazdne misto nebo nepovoleny znak nebo zacatek zavorky
 
-        if (!isspace(c) && !isalnum(c) && c != '_' && c != '$' && c != '.' && c != '(' && c!= ')' && c!= '{' && c!= '}' && c!= '=' && c!= '+' && c!= '-' && c!= '*' && c!= '/' && c!= '<' && c!= '>' && c!='!' && c!= ';' && c != ',') { return LEX_ERROR; break; } // pokud se neobjevi prazdne misto nebo zavorky nebo operatory ale nejaky nepovoleny znak je to error
+        if (!isspace(c) && !isalnum(c) && c != '_' && c != '$' && c != '.' && c != '(' && c!= ')' && c!= '{' && c!= '}' && c!= '=' && c!= '+' && c!= '-' && c!= '*' && c!= '/' && c!= '<' && c!= '>' && c!='!' && c!= ';' && c != ',') { return ERR_LEX_ERR; break; } // pokud se neobjevi prazdne misto nebo zavorky nebo operatory ale nejaky nepovoleny znak je to error
 
-        ungetc(c, source); // POZOR! Je potreba vratit posledni nacteny znak
+        ungetc(c, file); // POZOR! Je potreba vratit posledni nacteny znak
 
         // kontrola, zda se nejedna o klicove slovo nebo treba povinnou vestavenou fci
 
@@ -250,23 +250,176 @@ break;
 	    else {return ID;}
 	} break;
 
+    case 4: // RETEZCOVY LITERAL
+
+        if (c != '"' && c!= '\x5C'){ // dokud sme v retezci a nejsou pouzity specialni znaky jako \n \"
+
+         strAddChar(buffer, c); // tak normalne naplnuj strukturu
+
+         count_queue = 0; // radsi furt nuluj count_queue jelikoz se nejedna o specialni znak
+
+         state = 4; // a zustan tady
+        }
+
+        else if (c == '\x5C'){ // bude nasledovat specialni znak
+
+         strAddChar(buffer, c); // nahraj lomitko do struktury
+
+         count_queue = 1; // signalizuj ze se bude jedna o nejaky spec. znak
+
+         state = 4; // a zustan tady
+
+        }
+
+        else if (c == '"' && count_queue == 1){ // jedna se o uvozovky uvnitr stringu NE signalizujici jeho konec
+
+         strAddChar(buffer, c); // hod je do struktury
+
+         state = 4; // a zustan tady
+
+        }
+
+        else if (c == '"' && count_queue == 0){ // sme na konci retezce
+
+         return STRING_LITERAL; // vrat retezcovy literal
+        } break;
+
+    case 5: // CELOCISELNY LITERAL
+
+        if (isdigit(c)){ // pokud prichazi cislo
+
+         strAddChar(buffer, c); // pln strukturu
+
+         state = 5; // a zustan tady
+        }
+
+        else if (!isdigit(c) && c != ';' && c != '.' && c != 'e' && c != 'E' && !isspace(c) && c != ')' && c != '+' && c != '-' && c != '/' && c != '*' && c != '!'){ // pokud nasleduje znak jiny nez ; ktery signalizuje konec zadavani literalu nebo tecka signalizujici des. cislo nebo exponent, je to error
+
+          return ERR_LEX_ERR; break;
+        }
+
+        else if (c == ';'){
+
+          ungetc(c, file); // konec celeho cisla, vracime ; nebo volny zpatky, zpracujem pak
+
+          return INT_LITERAL; // a vrati se celociselny literal
+
+        }
+
+        else if (isspace(c) || c == ')'){ // nasleduje volne misto, konec zadavani cisla, cislo muze byt zprava v zavorce! DOPLNIT DO FLOATU!!!!
+
+          ungetc(c, file);
+
+          return INT_LITERAL; // a vrati se celociselny literal
+        }
+
+        else if(c == '.') { // bude se jednat o desetinny literal ve kterem se nachazi desetinna cast
+
+         strAddChar(buffer, c);
+         state = 6;
+
+        }
+
+        else if(c == 'e' || c == 'E') { // bude se jednat o desetinny literal ve kterem NENI desetinna cast ale pouze exponent
+
+         strAddChar(buffer, c);
+         state = 7;
+
+        }
+        break;
+
+    case 6: // DESETINNY LITERAL
+
+        if (isdigit(c)){ //Ak prijde cislo
+
+         strAddChar(buffer, c); // pln strukturu
+
+         state = 6; // a zustan tady
+        }
+
+        else if (c == 'e' || c == 'E'){ // nasleduje exponent
+
+         strAddChar(buffer, c);
+
+         state = 7;
+        }
+
+        else if (!isdigit(c) && c != ';' && c != 'e' && c != 'E' && !isspace(c) && c != ')' && c != '+' && c != '-' && c != '/' && c != '*' && c != '!'){ // Ked je iny nez ; alebo exponent je to ERR_LEX_ERR
+
+          return ERR_LEX_ERR; break;
+        }
+
+        else if (c == ';'){
+
+          ungetc(c, file); // konec desetinneho cisla, vracime ; zpatky, zpracujem pak
+
+          return DOUBLE_LITERAL; // a vrati se desetinny literal bez exponentu
+
+        }
+
+        else if (isspace(c) || c == ')'){
+
+        ungetc(c, file);
+
+        return DOUBLE_LITERAL; // a vrati se celociselny literal
+
+        }
+
+        break;
+
+    case 7: // DESETINNY LITERAL S EXPONENTEM
+
+        if ((c == '+' || c == '-') && sign_count == 0){ // nasleduje nepovinne znamenko
+
+         sign_count = 1; // bylo pouzito nepovinne znamenko
+
+         strAddChar(buffer, c); // uloz ho do struktury
+
+         state = 7; // a zustan tady
+        }
+
+        else if (isdigit(c)) { // nasleduje neprazdna posloupnost cislic
+
+         strAddChar(buffer, c); // uloz ho do struktury
+
+         state = 7; // a zustan tady
+        }
+
+        else if (!isdigit(c) && c != ';' && c != '+' && c != '-') {// nic jineho nez cisla za exponentem nebo semicolon tu byt nemuze
+
+         return ERR_LEX_ERR; break;
+        }
+
+        else if (c == '+' || (c == '-' && sign_count == 1)) { // pokus o pouziti dalsiho znamenka, nepovoleno
+
+         return ERR_LEX_ERR; break;
+        }
+
+        else if (c == ';'){
+
+          ungetc(c, file); // konec desetinneho cisla s exponentem, vracime ; zpatky, zpracujem pak
+
+          return DOUBLE_LITERAL; // a vrati se desetinny literal bez exponentu
+
+} break;
   case 8: // OPERATORY, SLOZENE OPERATORY, ROZPOZNAVANI ZACATKU KOMENTARU
 
           if (plus_count == 1 && c == '+')  { return INC; }
-     else if (plus_count == 1 && c != '+')  {ungetc(c, source); return PLUS;} // vrat neplatny znak, je to plus
+     else if (plus_count == 1 && c != '+')  {ungetc(c, file); return PLUS;} // vrat neplatny znak, je to plus
      else if (minus_count == 1 && c == '-') { return DEC; }
-     else if (minus_count == 1 && c != '-') {ungetc(c, source);  return MINUS;} // vrat neplatny znak, je to minus
+     else if (minus_count == 1 && c != '-') {ungetc(c, file);  return MINUS;} // vrat neplatny znak, je to minus
      else if (less_count == 1 && c == '=')  { return LESS_EQ;}
-     else if (less_count == 1 && c != '=')  {ungetc(c, source); return LESS; } // vrat neplatny znak, je to mensi nez
+     else if (less_count == 1 && c != '=')  {ungetc(c, file); return LESS; } // vrat neplatny znak, je to mensi nez
      else if (great_count == 1 && c == '=') {return GREAT_EQ;}
-     else if (great_count == 1 && c != '=') {ungetc(c, source); return GREAT; } // vrat neplatny znak, je to vetsi nez
+     else if (great_count == 1 && c != '=') {ungetc(c, file); return GREAT; } // vrat neplatny znak, je to vetsi nez
      else if (excl_count == 1 && c == '=')  {return N_EQUAL;}
-     else if (eq_count == 1 && c != '=')    {ungetc(c, source); return ASSIGN; } // vrat neplatny znak, je to rovnitko
+     else if (eq_count == 1 && c != '=')    {ungetc(c, file); return ASSIGN; } // vrat neplatny znak, je to rovnasa
      else if (eq_count == 1 && c == '=')    {return EQUAL;} // vrat operator ==
-     else if (quote_count == 1 && c != '/' && c != '*') {ungetc(c, source); return DIV; } // nejedna se o komentar ale o operator deleni
-     else if (quote_count == 1 && c == '/') state = 1; // jedna se o jednoradkovy komentar
-     else if (quote_count == 1 && c == '*') {state = 2;} // jedna se o blokovy komentar
-     else return LEX_ERROR;
+     else if (count_queue == 1 && c != '/' && c != '*') {ungetc(c, file); return DIV; } // nejedna se o komentar ale o operator deleni
+     else if (count_queue == 1 && c == '/') state = 1; // jedna se o jednoriadkovy komentar
+     else if (count_queue == 1 && c == '*') {state = 2;} // jedna se o blokovy komentar
+     else return ERR_LEX_ERR;
 break;
-}}
+}
+}
 }
