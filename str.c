@@ -1,8 +1,9 @@
-/*******************************************************************************/
-/*Projekt:Implementace interpretu imperativniho jazyka IFJ2016                                                   */
-/*Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar*/
-/*Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    */
-/*******************************************************************************/
+/**
+*  Projekt:Implementace interpretu imperativniho jazyka IFJ2016
+*  Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar
+*  Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    
+**/
+
 //jednoducha knihovna pro praci s nekonecne dlouhymi retezci
 #include <string.h>
 #include <malloc.h>
