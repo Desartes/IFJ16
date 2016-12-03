@@ -5,29 +5,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct
-{
-  int instType;  // typ instrukce
-  void *addr1; // adresa 1
-  void *addr2; // adresa 2
-  void *addr3; // adresa 3
+typedef struct {
+  int instType;
+  void *addr1;
+  void *addr2;
+  void *addr3;
 } tInstr;
 
-typedef struct listItem
-{
+typedef struct listItem {
   tInstr instruction;
   struct listItem *next;
 } *tListItemPtr;
 
 
-typedef struct
-{
-  struct listItem *first;  // ukazatel na prvni prvek
-  struct listItem *last;   // ukazatel na posledni prvek
-  struct listItem *active; // ukazatel na aktivni prvek
+typedef struct {
+  struct listItem *first;
+  struct listItem *last;
+  struct listItem *active;
 } tList;
 
 void Listinit(tList *L);
 void DisposeList(tList *L);
 void InsertFirst(tList *L,tInstr instr);
+int  GetInstruction( tList *L );
 #endif
