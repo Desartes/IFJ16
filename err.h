@@ -22,5 +22,5 @@ enum err_codes {
     ERR_INTERNAL_ERR        = 99, // Internal interpreter error
 };
 
-void err (int err);
+void err(int err);
 #endif
