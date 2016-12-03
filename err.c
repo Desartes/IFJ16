@@ -1,18 +1,11 @@
-/**
-*   Projekt:Implementace interpretu imperativniho jazyka IFJ2016
-*   Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar
-*   Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    
-**/
-
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "error.h"
-#include "galloc.h"
+#include "err.h"
 
-void err_codes(int erroro)
+void err(int err)
 {
-    switch(erroro)
+    switch(err)
     {
         case(ERR_LEX_ERR):
             fprintf(stderr, "Lexical error!\n");
