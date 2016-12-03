@@ -28,7 +28,7 @@ void InsertFirst(tList *L,tInstr instr){
 void InsertLast(tList *L, tInstr instr){
 	struct listItem *newItem = malloc(sizeof(struct listItem));
 	if(newItem == NULL)
-		return ;
+		err(ERR_INTERNAL_ERR);
 	newItem->instruction = instr;
 
 	if(L->first != NULL){
