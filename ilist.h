@@ -27,5 +27,4 @@ typedef struct {
 void Listinit(tList *L);
 void DisposeList(tList *L);
 void InsertFirst(tList *L,tInstr instr);
-int  GetInstruction( tList *L );
 #endif
