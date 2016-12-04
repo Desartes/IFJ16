@@ -42,7 +42,7 @@ void free_string(string *s){
 
 int compare_keywords(string *s){
 	if(!strcmp(s->str,"boolean"))
-		return kw_true;
+		return kw_boolean;
 	if(!strcmp(s->str,"break"))
 		return kw_break;
 	if(!strcmp(s->str,"class"))
@@ -81,6 +81,8 @@ int compare_keywords(string *s){
 int get_token(FILE *f,string *str){
 	int state =  State_for_start;
 	int c;
+	int next_char = 0;
+	int next_double = 0;
 	int returnVal=1;
 	int read = TRUE;
 	clear_string(str);
@@ -94,17 +96,19 @@ int get_token(FILE *f,string *str){
 					add_char_to_String(str,c);
 					read = TRUE;
 					state = State_for_kw;
-					break;
 				}
-				else if(c == '_' || c == '$' || c == '.'){
+				else if (isdigit(c)){
+					read = TRUE;
+					state = State_for_digit;
+				}
+				else if(c == '_' || c == '$'){
 					add_char_to_String(str,c);
 					read = TRUE;
 					state = State_for_id;
 				}
 				else{
 					switch(c){
-						case EOF:	read = FALSE; 	break;
-
+						case EOF:	read = FALSE; 	returnVal = EOF; 				break;
 						case '/':	read = TRUE;	state = char_slash;				break;
 						case '{':	read = FALSE;	returnVal = char_LMZatvorka;	break;
 						case '}': 	read = FALSE;	returnVal = char_PMZatvorka;	break;
@@ -129,10 +133,11 @@ int get_token(FILE *f,string *str){
 						case '|':	read = TRUE;	state = char_pipe;				break;
 						case '&':	read = TRUE;	state = char_amperesand;		break;
 						case '\\':	read = TRUE;	state = char_backslash;			break;
-						default :	read = FALSE;	returnVal =	ERR_LEX_ERR;		break;
+						default :	read = FALSE;	returnVal =	ERR_LEX_ERR;		
 					}
-					break;
 				}
+				break;
+
 			case char_slash:
 				if(c == '/'){
 					returnVal = komentar1;
@@ -254,14 +259,27 @@ int get_token(FILE *f,string *str){
 					returnVal = ERR_SYNTAX_ERR;
 				}
 				break;
+/**************************************************************************/
+/**************************************************************************/
+
 			case State_for_kw :
 				if(c == EOF){
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
 				}
 				if(c != '\0' && !isspace(c) && c != EOF){
-					read = TRUE;
 					add_char_to_String(str,c);
+					if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.'){
+					str->str[str->length-1] ='\0';
+
+						if(compare_keywords(str)){
+							returnVal = compare_keywords(str);
+						}else{
+							returnVal = retazec;
+						}
+						read = FALSE;
+						ungetc(c,f);
+					}
 				}else{
 					read = FALSE;
 					if(compare_keywords(str)){
@@ -269,6 +287,60 @@ int get_token(FILE *f,string *str){
 					}else{
 						returnVal = retazec;
 					}
+				}
+				break;
+/**************************************************************************/
+/**************************************************************************/
+
+				case State_for_id :
+					if(c == EOF){
+						read = FALSE;
+						returnVal = ERR_LEX_ERR;
+					}
+					if(c != '\0' && !isspace(c) && c != EOF){
+						add_char_to_String(str,c);
+						if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.'){
+							str->str[str->length-1] ='\0';
+							
+							returnVal = retazec;
+							read = FALSE;
+							ungetc(c,f);
+						}
+					}else{
+						read = FALSE;
+						returnVal = retazec;
+					}
+					break;
+
+/**************************************************************************/
+/**************************************************************************/
+
+			case State_for_digit :
+				add_char_to_String(str,c);
+				if(!isdigit(c)){
+					if(c == '.')
+						next_double++;
+					next_char++;
+				}
+				if(c == EOF){
+					read = FALSE;
+					returnVal = ERR_LEX_ERR;
+				}
+				if(c == '\0' || isspace(c) || c == ';'){
+					if( c == ';')
+						next_char--;
+					read = FALSE;
+					if(next_char == 1 && next_double == 1){
+						returnVal = is_double;
+					}
+					else if(next_char == 0){
+						returnVal = is_int;
+					}
+					else{
+						returnVal = is_string;
+					}
+					str->str[str->length-1] ='\0';
+					ungetc(c,f);
 				}
 				break;
 		}
@@ -288,6 +360,10 @@ int main(void)
 	while(x  != EOF	){
 		x = get_token(f,s);
 		printf("%i\n", x);
+		for(int i = 0; s->str[i] != '\0'; i++){
+			putchar(s->str[i]);
+		}
+		printf("\n");
 		
 	}
 	return 0;

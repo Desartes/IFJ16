@@ -77,7 +77,7 @@
 
 #define kw_return		140
 
-#define kw_true			150
+#define kw_true			152
 #define kw_false		151
 
 #define buff_size 		256
@@ -87,8 +87,12 @@
 #define State_for_char	202
 #define State_for_kw	203
 #define State_for_id	204
-
 #define retazec			205
+#define State_for_digit	206
+
+#define is_string		300
+#define is_int			301
+#define is_double		302
 
 typedef struct{
 	char *str;
