@@ -5,6 +5,9 @@
 #include "ial.h"
 #include "err.h"
 
+/*
+*	Pomocna funkcia pre KMP algoritmus pre alokaciu pamete o dlzky vyhladavaneho podretazca
+*/
 int *mall_kmp(char *pod, int len_p)
 {
 	int k=-1;
@@ -25,11 +28,10 @@ int *mall_kmp(char *pod, int len_p)
 	}
 	return pi_len;
 
-
-
-
 }
-
+/*
+*	Knuth-Morris-Prattov algoritmus
+*/
 int kmp(char *ret,char *pod,int len_r, int len_p)
 {
 	int i;
@@ -56,6 +58,7 @@ int kmp(char *ret,char *pod,int len_r, int len_p)
 }
 
 
+
 int partition( int PS_med[], int left, int right) {
    int med=PS_med[left], i_left=left, k_right=right+1, help;
 		
@@ -78,6 +81,9 @@ int partition( int PS_med[], int left, int right) {
    return k_right;
 }
 
+/*
+*	Quicksort algoritmus rieseny rekurzivne 
+*/
 void quickSort( int pole[], int left, int right)
 {
    int help;
@@ -91,7 +97,50 @@ void quickSort( int pole[], int left, int right)
 	
 }
 
+/*
+*	Funkcie na pracu s listom obsahujucim parametre jednotlivej funkcie
+*/
+void Listinit(tList *L){
+	L->first = NULL;
+	L->last = NULL;
+	L->active = NULL;
+}
 
+void DisposeList(tList *L){
+	while(L->first != NULL){
+		tListItemPtr item = L->first->next;
+		free(L->first);
+		L->first = item;
+	}
+}
+
+void InsertFirst(tList *L,tInstr instr){
+	struct listItem *newItem = malloc(sizeof(struct listItem));
+	if(newItem == NULL)
+		err(ERR_INTERNAL_ERR);
+
+	newItem->instruction = instr;
+	newItem->next = L->first;
+	L->first = newItem;
+}
+
+void InsertLast(tList *L, tInstr instr){
+	struct listItem *newItem = malloc(sizeof(struct listItem));
+	if(newItem == NULL)
+		err(ERR_INTERNAL_ERR);
+	newItem->instruction = instr;
+
+	if(L->first != NULL){
+		L->last->next = newItem;
+		L->last = newItem;
+	}else
+		L->first = L->last = newItem;
+}
+
+
+/*
+*	Funkcie na pracu s TS tabulkou/tabulkami pomocou algoritmov binnary tree
+*/
 void TSinit(bin_tree *table)
 {
 	table->global=table->local=NULL;

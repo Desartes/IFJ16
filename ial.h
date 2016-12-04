@@ -5,13 +5,48 @@
 #include <stdlib.h>
 #include <string.h>
 #include "lex_key.h"
-#include "ilist.h"
+#include "err.h"
 
+
+/*
+*	Knuth-Morris-Prattov algoritmus
+*	Quick sort algoritmus
+*/
 int *mall_kmp(char *pod, int len_p);
 int kmp(char *ret,char *pod,int len_r, int len_p);
 void quickSort( int[], int, int);
 int partition( int[], int, int);
 
+/*
+*	Praca s listovou strukturov opisujucov argumenty funkcii
+*/
+typedef struct {
+  int instType;
+  void *addr1;
+  void *addr2;
+  void *addr3;
+} tInstr;
+
+typedef struct listItem {
+  tInstr instruction;
+  struct listItem *next;
+} *tListItemPtr;
+
+
+typedef struct {
+  struct listItem *first;
+  struct listItem *last;
+  struct listItem *active;
+} tList;
+
+void Listinit(tList *L);
+void DisposeList(tList *L);
+void InsertFirst(tList *L,tInstr instr);
+int  GetInstruction( tList *L );
+
+/*
+*	Praca s TS-tabulkou pomocou binnary tree
+*/ 
 struct node
 {
 	char key_val[BUFFER_SIZE];
