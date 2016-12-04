@@ -193,8 +193,10 @@ int get_token(FILE *f,string *str){
 			case char_slash:
 				if(c == '/'){
 					returnVal = komentar1;
+					break;
 				}else if(c == '*'){
 					returnVal = komentar2;
+					break;
 				}else if(returnVal != komentar2 && returnVal != komentar1){
 					state = State_for_start;
 					returnVal = char_slash;
@@ -202,17 +204,24 @@ int get_token(FILE *f,string *str){
 				}
 
 				if(returnVal == komentar1){
-					c = fgetc(f);
 					if(c == '\n'){
 						state = State_for_start;
 					}
 					if(c == EOF){
 						returnVal = State_for_start;
 					}
+					break;
 				}
-				if(returnVal == komentar2 && c == '*'){
-					if((c = fgetc(f)) == '/'){
-						state = State_for_start;
+				if(returnVal == komentar2){ 
+					if(c == '*'){
+						c = fgetc(f);
+						if(c == '/'){
+							state = State_for_start;
+						}
+						if(c == EOF){
+							read = FALSE;
+							returnVal = ERR_SYNTAX_ERR;
+						}
 					}
 					if(c == EOF){
 						read = FALSE;
