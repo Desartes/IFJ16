@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "scanner.h"
-#include "scanner.c"
+// #include "scanner.c"
 
 int main(void)
 {
@@ -16,11 +16,17 @@ int main(void)
 	int x;
 	while(x  != EOF	){
 		x = get_token(f,s);
-		printf("%i\n", x);
-		for(int i = 0; s->str[i] != '\0'; i++){
-			putchar(s->str[i]);
+		if (strcmp(s->str, "") != 0 )	{
+			/* code */
+			printf("%s\n", s->str);
+		} else {
+			printf("%d\n", x);
+			
 		}
-		printf("\n");
+		// for(int i = 0; s->str[i] != '\0'; i++){
+		// 	putchar(s->str[i]);
+		// }
+		// printf("\n");
 		
 	}
 	return 0;
