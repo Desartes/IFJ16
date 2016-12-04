@@ -474,5 +474,8 @@ int get_token(FILE *f,string *str){
 				break;
 		}
 	}
+	if(returnVal == kladny_exp){
+		returnVal = kladny_exp_I;
+	}
 	return returnVal;
 }
