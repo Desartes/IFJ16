@@ -30,6 +30,7 @@ typedef enum
 	k_static,
 	k_true,
 	k_void,
-	k_while
+	k_while,
+	k_function
 }key;
 #endif
