@@ -35,19 +35,22 @@ struct f_elem
 	char key_val[BUFFER_SIZE];
 	key typ;
 	struct f_elem *next;
-}
+};
 
 typedef struct 
 {
 	key ret;
 	bool define;
-	tlist ins_list;
+	tList ins_list;
 	bin_tree *table;
 	struct f_elem *elem;
 }f_data;
 
 void TSinit(bin_tree *table);
 void TSinit_local(bin_tree *table, bin_tree *global_table);
-struct node *TSnodecreate(char *name, key typ, void *data);
+struct node *TSnodcreate(char *name, key typ, void *data);
 struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem);
+int TSinsert(bin_tree * table, struct node * in);
+struct node * TSsearch(bin_tree * table, char * key);
+int TScopy(bin_tree * table, btree * N_table);
 #endif
