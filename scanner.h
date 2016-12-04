@@ -85,6 +85,16 @@
 
 #define buff_size 		256
 
+#define zaporny_exp		260
+#define kladny_exp		261
+
+#define kladny_exp_D	262
+#define	zaporny_exp_D	263
+
+#define kladny_exp_I	264
+#define zaporny_exp_I	265
+
+
 #define State_for_start	200
 #define State_for_word	201
 #define State_for_char	202

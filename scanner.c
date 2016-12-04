@@ -369,6 +369,11 @@ int get_token(FILE *f,string *str){
 
 			case State_for_digit :
 				add_char_to_String(str,c);
+				if(c == 'e' || c == 'E'){
+						read = TRUE;
+						state = is_double;
+						break;
+					}
 				if(!isdigit(c)){
 					if(c == '.')
 						next_double++;
@@ -378,8 +383,8 @@ int get_token(FILE *f,string *str){
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
 				}
-				if(c == '\0' || isspace(c) || c == ';' || c == ')' || c == EOF){
-					if( c == ';' || c == ')' || c == EOF )
+				if(c == '\0' || isspace(c) || c == ';' || !isspecific(c) || c == EOF){
+					if( c == ';' || !isspecific(c) || c == EOF)
 						next_char--;
 					read = FALSE;
 					if(next_char == 1 && next_double == 1){
@@ -395,7 +400,67 @@ int get_token(FILE *f,string *str){
 					ungetc(c,f);
 				}
 				break;
+/**************************************************************************/
+/**************************************************************************/
 
+			case is_double :
+				if(c == '+' || c == '-' || isdigit(c) || c == '.'){
+					next_char++;
+					add_char_to_String(str,c);
+					if(next_char == 1){
+						if(c == '+'){
+							returnVal = kladny_exp;
+						}else if(c == '-'){
+							returnVal = zaporny_exp;
+						}else if(isdigit(c)){
+							returnVal = kladny_exp;
+						}else{
+							read = FALSE;
+							returnVal = ERR_LEX_ERR;
+						}
+					}
+					if(next_char != 1 && (c == '+' || c == '-' )){
+						read = FALSE;
+						ungetc(c,f);
+						str->str[str->length-1] ='\0';
+						break;
+					}
+					if(c == '.'){
+						next_double++;
+						break;
+					}
+					if(next_char == 1){
+						break;
+					}
+					if(next_double == 1){
+						printf("DOUBLE\n");
+						printf("%i\n",returnVal );
+						if( returnVal == kladny_exp || returnVal == kladny_exp_I){
+							printf("KLADNY\n");
+							returnVal = kladny_exp_D;
+						}
+						if(returnVal == zaporny_exp || returnVal == zaporny_exp_I){
+							printf("zaporny_exp\n");
+							returnVal = zaporny_exp_D;
+						}
+					}else if(next_char != 1 && isdigit(c) && next_double == 0){
+						if( returnVal == kladny_exp){
+							returnVal = kladny_exp_I;
+						}
+						if(returnVal == zaporny_exp) {
+							returnVal = zaporny_exp_I;
+						}
+					}else if(c == '.' && next_double != 1){
+						ungetc(c,f);
+						str->str[str->length-1] ='\0';
+						read = FALSE;
+					}
+					
+				}else{
+					ungetc(c,f);
+					read = FALSE;
+				}
+				break;
 /**************************************************************************/
 /**************************************************************************/
 			case char_uvodzovky :
