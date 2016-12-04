@@ -92,6 +92,7 @@
 #define is_string		300
 #define is_int			301
 #define is_double		302
+#define is_id			303
 
 typedef struct{
 	char *str;

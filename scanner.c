@@ -268,13 +268,13 @@ int get_token(FILE *f,string *str){
 				}
 				if(c != '\0' && !isspace(c) && c != EOF){
 					add_char_to_String(str,c);
-					if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.'){
+					if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.' || c == ')'){
 					str->str[str->length-1] ='\0';
 
 						if(compare_keywords(str)){
 							returnVal = compare_keywords(str);
 						}else{
-							returnVal = is_string;
+							returnVal = is_id;
 						}
 						read = FALSE;
 						ungetc(c,f);
@@ -284,7 +284,7 @@ int get_token(FILE *f,string *str){
 					if(compare_keywords(str)){
 						returnVal = compare_keywords(str);
 					}else{
-						returnVal = is_string;
+						returnVal = is_id;
 					}
 				}
 				break;
@@ -301,13 +301,13 @@ int get_token(FILE *f,string *str){
 						if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.' || c == ')'){
 							str->str[str->length-1] ='\0';
 							
-							returnVal = is_string;
+							returnVal = is_id;
 							read = FALSE;
 							ungetc(c,f);
 						}
 					}else{
 						read = FALSE;
-						returnVal = is_string;
+						returnVal = is_id;
 					}
 					break;
 
@@ -334,9 +334,9 @@ int get_token(FILE *f,string *str){
 					}
 					else if(next_char == 0){
 						returnVal = is_int;
-					}
+					}	
 					else{
-						returnVal = is_string;
+						returnVal = is_id;
 					}
 					str->str[str->length-1] ='\0';
 					ungetc(c,f);
