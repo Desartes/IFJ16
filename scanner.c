@@ -32,9 +32,6 @@ void clear_string(string *s){
 }
 
 void free_string(string *s){
-	for(unsigned int i = 0; i < (s->length); i++){
-		s->str[i] = '\0';
-	}
 	s->length = 0;
 	s->alloc  = 0;
 	free(s->str);
@@ -86,6 +83,7 @@ int get_token(FILE *f,string *str){
 	int returnVal=1;
 	int read = TRUE;
 	clear_string(str);
+	free_string(str);
 	init_string(str);
 	while(read){
 		c = fgetc(f);
@@ -100,6 +98,7 @@ int get_token(FILE *f,string *str){
 				else if (isdigit(c)){
 					read = TRUE;
 					state = State_for_digit;
+					add_char_to_String(str,c);
 				}
 				else if(c == '_' || c == '$'){
 					add_char_to_String(str,c);
@@ -125,7 +124,7 @@ int get_token(FILE *f,string *str){
 						case ';':	read = FALSE;	returnVal = char_bod_ciarka;	break;
 						case '%':	read = FALSE;	returnVal = char_percento;		break;
 						case '\'':	read = FALSE;	returnVal = char_apostrof;		break;
-						case '\"':	read = FALSE;	returnVal = char_uvodzovky;		break;
+						case '\"':	read = TRUE;	state = char_uvodzovky;			break;
 						case '<':	read = TRUE;	state = char_mensi;				break;
 						case '>':	read = TRUE;	state = char_vacsi;				break;
 						case '=':	read = TRUE;	state = char_rovnasa;			break;
@@ -275,7 +274,7 @@ int get_token(FILE *f,string *str){
 						if(compare_keywords(str)){
 							returnVal = compare_keywords(str);
 						}else{
-							returnVal = retazec;
+							returnVal = is_string;
 						}
 						read = FALSE;
 						ungetc(c,f);
@@ -285,7 +284,7 @@ int get_token(FILE *f,string *str){
 					if(compare_keywords(str)){
 						returnVal = compare_keywords(str);
 					}else{
-						returnVal = retazec;
+						returnVal = is_string;
 					}
 				}
 				break;
@@ -299,16 +298,16 @@ int get_token(FILE *f,string *str){
 					}
 					if(c != '\0' && !isspace(c) && c != EOF){
 						add_char_to_String(str,c);
-						if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.'){
+						if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.' || c == ')'){
 							str->str[str->length-1] ='\0';
 							
-							returnVal = retazec;
+							returnVal = is_string;
 							read = FALSE;
 							ungetc(c,f);
 						}
 					}else{
 						read = FALSE;
-						returnVal = retazec;
+						returnVal = is_string;
 					}
 					break;
 
@@ -326,8 +325,8 @@ int get_token(FILE *f,string *str){
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
 				}
-				if(c == '\0' || isspace(c) || c == ';'){
-					if( c == ';')
+				if(c == '\0' || isspace(c) || c == ';' || c == ')'){
+					if( c == ';' || c == ')' )
 						next_char--;
 					read = FALSE;
 					if(next_char == 1 && next_double == 1){
@@ -341,6 +340,18 @@ int get_token(FILE *f,string *str){
 					}
 					str->str[str->length-1] ='\0';
 					ungetc(c,f);
+				}
+				break;
+
+/**************************************************************************/
+/**************************************************************************/
+			case char_uvodzovky :
+				if(c != '"'){
+					read = TRUE;
+					add_char_to_String(str,c);
+				}else{
+					read = FALSE;
+					returnVal = is_string;
 				}
 				break;
 		}

@@ -87,8 +87,7 @@
 #define State_for_char	202
 #define State_for_kw	203
 #define State_for_id	204
-#define retazec			205
-#define State_for_digit	206
+#define State_for_digit	205
 
 #define is_string		300
 #define is_int			301
@@ -100,42 +99,42 @@ typedef struct{
 	unsigned int alloc;
 }string;
 /**
- * @brief      { function_description }
+ * @brief      { init string }
  *
- * @param[in]  lex   The lex
+ * @param      s     { string }
  *
- * @return     { description_of_the_return_value }
+ * @return     { TRUE or ERR_INTERNAL_ERR if allocation == NULL }
  */
 int init_string(string *s);
 /**
  * @brief      Adds a character to string.
  *
- * @param      s     { parameter_description }
- * @param[in]  c     { parameter_description }
+ * @param      s     { string }
+ * @param[in]  c     { char }
  *
- * @return     { description_of_the_return_value }
+ * @return     { TRUE or ERR_INTERNAL_ERR if allocation == NULL } 
  */
 int add_char_to_String(string *s,char c);
 /**
- * @brief      { function_description }
+ * @brief      { deallocation  }
  *
- * @param      s     { parameter_description }
+ * @param      s     { string }
  */
 void free_string(string *s);
 
 /**
- * @brief      { function_description }
+ * @brief      { Compare keywords with string }
  *
- * @param      s     { parameter_description }
+ * @param      s     { string }
  *
- * @return     { description_of_the_return_value }
+ * @return     { Value for a particular key word }
  */
 int compare_keywords(string *s);
 /**
  * @brief      Gets the token.
  *
- * @param      f     { parameter_description }
- * @param      s     { parameter_description }
+ * @param      f     { input FILE }
+ * @param      s     { string }
  *
  * @return     The token.
  */
