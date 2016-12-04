@@ -52,5 +52,5 @@ struct node *TSnodcreate(char *name, key typ, void *data);
 struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem);
 int TSinsert(bin_tree * table, struct node * in);
 struct node * TSsearch(bin_tree * table, char * key);
-int TScopy(bin_tree * table, btree * N_table);
+int TScopy(bin_tree * table, bin_tree * N_table);
 #endif

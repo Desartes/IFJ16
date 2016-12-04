@@ -100,7 +100,7 @@ void TSinit_local(bin_tree *table, bin_tree *global_table)
 	table->local=NULL;
 }
 
-struct node *TSnodecreate(char *name,key typ, void *data)
+struct node *TSnodcreate(char *name,key typ, void *data)
 {
 	struct node *nod;
 	if((nod=malloc(sizeof(struct node)))==NULL)
@@ -154,7 +154,7 @@ struct node *TSnodecreate(char *name,key typ, void *data)
 		free(nod);
 		err(ERR_INTERNAL_ERR);
 	}
-
+	return nod;
 
 
 }
@@ -166,7 +166,8 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 		err(ERR_INTERNAL_ERR);
 	nod->typ=k_function;
 	strncpy(nod->key_val,name,BUFFER_SIZE);
-	name=nod->Rnode=nod->Lnode=NULL;
+	name=NULL;
+	nod->Rnode=nod->Lnode=NULL;
 
 	if((nod->f_data=(f_data *)malloc(sizeof(f_data)))==NULL)
 		err(ERR_INTERNAL_ERR);
@@ -179,9 +180,9 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 		case k_int:
 			nod->data=(int *) malloc(sizeof(int));
 			break;
-		case k_String:
+/*		case k_String:
 			nod->data=(char *) malloc(sizeof(strlen(data)));
-			break;
+			break; */
 		case k_double:
 			nod->data=(double *) malloc(sizeof(double));
 			break;
@@ -189,35 +190,18 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 			free(nod);
 			err(ERR_INTERNAL_ERR);
 	}
-	if(nod->data!=NULL)
+	if(nod->data==NULL)
 	{
-			switch(typ)
-			{
-			case k_boolean:
-				*((bool *)nod->data) = *(bool *)data;
-				break;
-			case k_int:
-				*((int *)nod->data) = *(int *)data;
-				break;
-			case k_String:
-				*((char *)nod->data) = *(char *)data;
-				break;
-			case k_double:
-				*((double *)nod->data) = *(double *)data;
-				break;
-			default:
-				free(nod);
-				err(ERR_INTERNAL_ERR);
-			}
+			err(ERR_INTERNAL_ERR);
 	}
-	else
-	{
-		free(nod);
+
+	((f_data *)nod->f_data)->ret = typ;
+	((f_data *)nod->f_data)->elem = elem;
+	((f_data *)nod->f_data)->define = define;
+	if((((f_data *)nod->f_data)->table=(bin_tree *)malloc(sizeof(bin_tree)))==NULL)
 		err(ERR_INTERNAL_ERR);
-	}
-
-	
-
-
-
+	TSinit(((f_data *)nod->f_data)->table);
+	Listinit(&((f_data *)nod->f_data)->ins_list);
+	return nod;
 }
+
