@@ -8,26 +8,51 @@ int main(void)
 {
 	FILE *f = fopen("test.txt","r");
 	string *s;
-
 	s = malloc(sizeof(string));
+
 	if(f == NULL || s == NULL)
 		return -1;
 	init_string(s);
 	int x;
-	while(x  != EOF	){
-		x = get_token(f,s);
-		if (strcmp(s->str, "") != 0 )	{
-			/* code */
-			printf("%s\n", s->str);
-		} else {
-			printf("%d\n", x);
-			
-		}
-		// for(int i = 0; s->str[i] != '\0'; i++){
-		// 	putchar(s->str[i]);
-		// }
-		// printf("\n");
+
+
+
+
+	if (x == kw_class) {
+		
+	}
+
 		
 	}
 	return 0;
+}
+
+int first_time = 0;
+
+int program() {
+
+
+	if (first_time)	{
+		if ( (x = get_token(f,s)) == kw_class) {
+			if ( (x = get_token()) == kw_main ) {
+				if ( (x = get_token()) == kw_run ) {
+					/* code */
+				}
+			}
+		}
+	}
+
+
+
+
+
+	if ( (x = get_token(f,s)) == kw_class) {
+		if ( (x = get_token()) == kw_main ) {
+			if ( (x = get_token()) ==  )
+			{
+				/* code */
+			}
+		}
+	}
+
 }
