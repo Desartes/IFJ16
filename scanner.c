@@ -433,14 +433,11 @@ int get_token(FILE *f,string *str){
 						break;
 					}
 					if(next_double == 1){
-						printf("DOUBLE\n");
 						printf("%i\n",returnVal );
 						if( returnVal == kladny_exp || returnVal == kladny_exp_I){
-							printf("KLADNY\n");
 							returnVal = kladny_exp_D;
 						}
 						if(returnVal == zaporny_exp || returnVal == zaporny_exp_I){
-							printf("zaporny_exp\n");
 							returnVal = zaporny_exp_D;
 						}
 					}else if(next_char != 1 && isdigit(c) && next_double == 0){
