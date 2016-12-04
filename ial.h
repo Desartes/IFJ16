@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include "lex_key.h"
 #include "ilist.h"
 
@@ -51,7 +50,10 @@ void TSinit(bin_tree *table);
 void TSinit_local(bin_tree *table, bin_tree *global_table);
 struct node *TSnodcreate(char *name, key typ, void *data);
 struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem);
-int TSinsert(bin_tree * table, struct node * in);
-struct node * TSsearch(bin_tree * table, char * key);
-int TScopy(bin_tree * table, bin_tree * N_table);
+int TSinsert(bin_tree *table, struct node *in);
+int TSNinsert(struct node **mark_nod, struct node *in);
+struct node * TSsearch(bin_tree *table, char *key);
+struct node * TSNsearch(struct node *mark_nod, char *key);
+int TScopy(bin_tree *table, bin_tree *N_table);
+struct node *TSNcopy(struct node *nod);
 #endif

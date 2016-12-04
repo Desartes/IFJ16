@@ -32,25 +32,27 @@ int *mall_kmp(char *pod, int len_p)
 
 int kmp(char *ret,char *pod,int len_r, int len_p)
 {
-		int i;
-		int *pi_len = mall_kmp(pod, len_p);
-		int k=-1;
+	int i;
+	int *pi_len = mall_kmp(pod, len_p);
+	int k=-1;
 
-		if(!pi_len)
-			err(ERR_INTERNAL_ERR);
+	if(!pi_len)
+		err(ERR_INTERNAL_ERR);
 
-		for (i = 0; i < len_r; i++) {
+	for (i = 0; i < len_r; i++) 
+	{
 		while (k > -1 && pod[k+1] != ret[i])
 			k = pi_len[k];
 		if (ret[i] == pod[k+1])
 			k++;
-		if (k == len_p - 1) {
+		if (k == len_p - 1) 
+		{
 			free(pi_len);
 			return i-k;
 		}
 	}
 	free(pi_len);
-		err(ERR_INTERNAL_ERR);
+	err(ERR_INTERNAL_ERR);
 }
 
 
@@ -181,7 +183,7 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 			nod->data=(int *) malloc(sizeof(int));
 			break;
 /*		case k_String:
-			nod->data=(char *) malloc(sizeof(strlen(data)));
+			nod->data=(char *) malloc(sizeof(strlen(???data???)));
 			break; */
 		case k_double:
 			nod->data=(double *) malloc(sizeof(double));
@@ -205,3 +207,77 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 	return nod;
 }
 
+int TSinsert(bin_tree *table, struct node *in)
+{
+	return TSNinsert(&table->local, in);
+}
+
+int TSNinsert(struct node **mark_nod, struct node *in)
+
+{
+	if(*mark_nod==NULL || (strcmp(in->key_val,(*mark_nod)->key_val)==ERR_OK) )
+	{
+		if(*mark_nod==NULL)
+		{
+			*mark_nod=in;
+			return ERR_OK;
+		}
+		else
+		{
+			(*mark_nod)->data=in->data;
+			return ERR_OK;
+		}
+	}
+	else 
+	{
+
+		if(strcmp(in->key_val,(*mark_nod)->key_val)>ERR_OK)
+			return TSNinsert(&(*mark_nod)->Rnode,in);
+		else
+			return TSNinsert(&(*mark_nod)->Lnode,in);
+	}
+}
+
+struct node * TSsearch(bin_tree * table, char * key)
+{
+	struct node *search=TSNsearch(table->local,key);
+	if(search!=NULL)
+		return search;
+	else
+		return TSNsearch(table->global,key);
+
+}
+
+struct node * TSNsearch(struct node *mark_nod, char *key)
+{
+	if(mark_nod==NULL)
+		return NULL;
+	if(strcmp(mark_nod->key_val,key)==ERR_OK)
+		return mark_nod;
+	else
+	{
+		if(strcmp(mark_nod->key_val,key)>ERR_OK)
+			return TSNsearch(mark_nod->Lnode,key);
+		else
+			return TSNsearch(mark_nod->Rnode,key);
+	}
+}
+
+
+int TScopy(bin_tree * table, bin_tree * N_table)
+{
+	N_table->global=table->global;
+	N_table->local=TSNcopy(table->local);
+	return ERR_OK;
+}
+struct node *TSNcopy(struct node *nod)
+{
+	struct node *NEW;
+	if((NEW=TSnodcreate(nod->key_val,nod->typ,nod->data))!=NULL)
+	{
+		NEW->Rnode=TSNcopy(nod->Rnode);
+		NEW->Lnode=TSNcopy(nod->Lnode);
+		return NEW;
+	}
+	return NULL;
+}
