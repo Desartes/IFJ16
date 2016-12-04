@@ -53,6 +53,8 @@
 #define char_line		84
 #define print_apostrof	85
 #define print_uvodzovky 86
+#define char_inc 		87
+#define char_dec 		88
 /***************************************************
 ****************************************************/
 
@@ -69,7 +71,8 @@
 #define kw_while		112
 #define kw_for			113
 #define kw_break		114
-
+#define kw_run 			115
+#define kw_main			116
 #define kw_class		120
 
 #define kw_else			130
@@ -140,4 +143,12 @@ int compare_keywords(string *s);
  * @return     The token.
  */
 int get_token(FILE *f, string *s);
+/**
+ * @brief      { function_description }
+ *
+ * @param[in]  c     { parameter_description }
+ *
+ * @return     { description_of_the_return_value }
+ */
+int isspecific(char c);
 #endif

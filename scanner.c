@@ -1,6 +1,33 @@
 #include "scanner.h"
 #include "err.h"
-
+int isspecific(char c){
+	switch(c){
+		case '+':	return 0;
+		case '-':	return 0;
+		case '*':	return 0;
+		case '%':	return 0;
+		case '/':	return 0;
+		case '(':	return 0;
+		case ')':	return 0;
+		case '{':	return 0;
+		case '}':	return 0;
+		case '[':	return 0;
+		case ']':	return 0;
+		case '.':	return 0;
+		case '&':	return 0;
+		case '|':	return 0;
+		case '>':	return 0;
+		case '<':	return 0;
+		case '=':	return 0;
+		case '!':	return 0;
+		case ',':	return 0;
+		case ':':	return 0;
+		case ';':	return 0;
+		case '\\':	return 0;
+		case '\'':	return 0;
+	}
+	return 1;
+}
 int init_string(string *s){
 	s->str = (char *)malloc(8*sizeof(char));
 	if(s->str == NULL)
@@ -72,6 +99,10 @@ int compare_keywords(string *s){
 		return kw_void;
 	if(!strcmp(s->str,"while"))
 		return kw_while;
+	if(!strcmp(s->str,"run"))
+		return kw_run;
+	if(!strcmp(s->str,"main"))
+		return kw_main;
 	return FALSE;
 }
 
@@ -117,8 +148,8 @@ int get_token(FILE *f,string *str){
 						case ']':	read = FALSE;	returnVal = char_PHZatvorka;	break;
 						case '.': 	read = FALSE; 	returnVal = char_bodka; 		break;
         			    case ',': 	read = FALSE; 	returnVal = char_ciarka;		break;
-       				    case '+': 	read = FALSE; 	returnVal = char_plus; 			break;
-         			  	case '-': 	read = FALSE; 	returnVal = char_minus;			break;
+       				    case '+': 	read = TRUE;	state = char_plus; 				break;
+         			  	case '-': 	read = TRUE; 	state = char_minus;				break;
 						case '*': 	read = FALSE; 	returnVal = char_star;			break;
 						case ':':	read = FALSE;	returnVal = char_dvoj_bodka;	break;
 						case ';':	read = FALSE;	returnVal = char_bod_ciarka;	break;
@@ -134,6 +165,28 @@ int get_token(FILE *f,string *str){
 						case '\\':	read = TRUE;	state = char_backslash;			break;
 						default :	read = FALSE;	returnVal =	ERR_LEX_ERR;		
 					}
+				}
+				break;
+
+			case char_plus :
+				if(c == '+'){
+					read = FALSE;
+					returnVal = char_inc;
+				}else{
+					read = FALSE;
+					returnVal = char_plus;
+					ungetc(c,f);
+				}
+				break;
+
+			case char_minus :
+				if(c == '-'){
+					read = FALSE;
+					returnVal = char_dec;
+				}else{
+					read = FALSE;
+					returnVal = char_minus;
+					ungetc(c,f);
 				}
 				break;
 
@@ -268,7 +321,7 @@ int get_token(FILE *f,string *str){
 				}
 				if(c != '\0' && !isspace(c) && c != EOF){
 					add_char_to_String(str,c);
-					if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.' || c == ')'){
+					if(!isspecific(c)){
 					str->str[str->length-1] ='\0';
 
 						if(compare_keywords(str)){
@@ -298,7 +351,7 @@ int get_token(FILE *f,string *str){
 					}
 					if(c != '\0' && !isspace(c) && c != EOF){
 						add_char_to_String(str,c);
-						if(c == '=' || c == '&' || c == '|' || c == ';' || c == '.' || c == ')'){
+						if(!isspecific(c)){
 							str->str[str->length-1] ='\0';
 							
 							returnVal = is_id;
@@ -325,8 +378,8 @@ int get_token(FILE *f,string *str){
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
 				}
-				if(c == '\0' || isspace(c) || c == ';' || c == ')'){
-					if( c == ';' || c == ')' )
+				if(c == '\0' || isspace(c) || c == ';' || c == ')' || c == EOF){
+					if( c == ';' || c == ')' || c == EOF )
 						next_char--;
 					read = FALSE;
 					if(next_char == 1 && next_double == 1){
