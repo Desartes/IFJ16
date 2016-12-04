@@ -12,20 +12,27 @@ int init_string(string *s){
 }
 
 int add_char_to_String(string *s,char c){
-	s->length++;
-	if(s->length >= s->alloc){
-		s->alloc++;
+	if(s->length+1 >= s->alloc){
+		s->alloc = s->alloc + 8;
 		s->str = (char *)realloc(s->str,s->alloc * sizeof(char));
 		if(s->str == NULL)
 			return ERR_INTERNAL_ERR;
 	}
-	s->str[s->length-1] = c;
+	s->str[s->length] = c;
+	s->length = s->length+1;
 	s->str[s->length] = '\0';
 	return TRUE;
 }
+void clear_string(string *s){
+	if(s->length != 0){
+		for(unsigned int i = 0; i < (s->length); i++){
+			s->str[i] = '\0';
+		}
+	}
+}
 
 void free_string(string *s){
-	for(unsigned int i = 0; i < (s->length-1); i++){
+	for(unsigned int i = 0; i < (s->length); i++){
 		s->str[i] = '\0';
 	}
 	s->length = 0;
@@ -76,7 +83,7 @@ int get_token(FILE *f,string *str){
 	int c;
 	int returnVal=1;
 	int read = TRUE;
-	free_string(str);
+	clear_string(str);
 	init_string(str);
 	while(read){
 		c = fgetc(f);
@@ -85,17 +92,20 @@ int get_token(FILE *f,string *str){
 				if(isspace(c)){}
 				else if(isalpha(c)){
 					add_char_to_String(str,c);
+					read = TRUE;
 					state = State_for_kw;
+					break;
 				}
-				else if(c == '_' || c == '$'){
+				else if(c == '_' || c == '$' || c == '.'){
 					add_char_to_String(str,c);
+					read = TRUE;
 					state = State_for_id;
 				}
 				else{
 					switch(c){
-						printf("Switch 1\n");
-						case EOF:	read = FALSE; return EOF;
-						case '/':	state = char_slash;	break;
+						case EOF:	read = FALSE; 	break;
+
+						case '/':	read = TRUE;	state = char_slash;				break;
 						case '{':	read = FALSE;	returnVal = char_LMZatvorka;	break;
 						case '}': 	read = FALSE;	returnVal = char_PMZatvorka;	break;
 						case '(':	read = FALSE;	returnVal = char_LZatvorka;		break;
@@ -244,20 +254,22 @@ int get_token(FILE *f,string *str){
 					returnVal = ERR_SYNTAX_ERR;
 				}
 				break;
-
 			case State_for_kw :
-				add_char_to_String(str,c);
-				if(isspace(c) || c == EOF ){
-					if(compare_keywords(str) != FALSE){
+				if(c == EOF){
+					read = FALSE;
+					returnVal = ERR_LEX_ERR;
+				}
+				if(c != '\0' && !isspace(c) && c != EOF){
+					read = TRUE;
+					add_char_to_String(str,c);
+				}else{
+					read = FALSE;
+					if(compare_keywords(str)){
 						returnVal = compare_keywords(str);
-						read = FALSE;
 					}else{
-						returnVal = premenna;
+						returnVal = retazec;
 					}
 				}
-				break;
-			case State_for_id :
-
 				break;
 		}
 	}

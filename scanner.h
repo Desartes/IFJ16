@@ -88,7 +88,7 @@
 #define State_for_kw	203
 #define State_for_id	204
 
-#define premenna		205
+#define retazec			205
 
 typedef struct{
 	char *str;
