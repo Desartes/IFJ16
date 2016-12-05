@@ -13,6 +13,7 @@ int isspecific(char c){
 		case '}':	return 0;
 		case '[':	return 0;
 		case ']':	return 0;
+		case '"':	return 0;
 		case '.':	return 0;
 		case '&':	return 0;
 		case '|':	return 0;
@@ -324,51 +325,48 @@ int get_token(FILE *f,string *str){
 /**************************************************************************/
 
 			case State_for_kw :
-				if(c == EOF){
-					read = FALSE;
-					returnVal = ERR_LEX_ERR;
-				}
-				if(c != '\0' && !isspace(c) && c != EOF){
-					add_char_to_String(str,c);
-					if(!isspecific(c)){
-					str->str[str->length-1] ='\0';
-
-						if(compare_keywords(str)){
-							returnVal = compare_keywords(str);
-						}else{
-							returnVal = is_id;
-						}
+				add_char_to_String(str,c);
+					if(c == EOF){
+						read = FALSE;
+						returnVal = ERR_LEX_ERR;
+						str->str[str->length-1] ='\0';
+					}else if(!isspecific(c)){
 						read = FALSE;
 						ungetc(c,f);
+						str->str[str->length-1] ='\0';
+						if(compare_keywords(str))
+							returnVal = compare_keywords(str);
+						else
+							returnVal = is_id;
+					}else if(isspace(c)){
+						read = FALSE;
+						ungetc(c,f);
+						str->str[str->length-1] ='\0';
+						if(compare_keywords(str))
+							returnVal = compare_keywords(str);
+						else
+							returnVal = is_id;
 					}
-				}else{
-					read = FALSE;
-					if(compare_keywords(str)){
-						returnVal = compare_keywords(str);
-					}else{
-						returnVal = is_id;
-					}
-				}
 				break;
 /**************************************************************************/
 /**************************************************************************/
 
 				case State_for_id :
+					add_char_to_String(str,c);
+
 					if(c == EOF){
 						read = FALSE;
 						returnVal = ERR_LEX_ERR;
-					}
-					if(c != '\0' && !isspace(c) && c != EOF){
-						add_char_to_String(str,c);
-						if(!isspecific(c)){
-							str->str[str->length-1] ='\0';
-							
-							returnVal = is_id;
-							read = FALSE;
-							ungetc(c,f);
-						}
-					}else{
+						str->str[str->length-1] ='\0';
+					}else if(!isspecific(c)){
 						read = FALSE;
+						ungetc(c,f);
+						str->str[str->length-1] ='\0';
+						returnVal = is_id;
+					}else if(isspace(c)){
+						read = FALSE;
+						ungetc(c,f);
+						str->str[str->length-1] ='\0';
 						returnVal = is_id;
 					}
 					break;
@@ -442,7 +440,6 @@ int get_token(FILE *f,string *str){
 						break;
 					}
 					if(next_double == 1){
-						printf("%i\n",returnVal );
 						if( returnVal == kladny_exp || returnVal == kladny_exp_I){
 							returnVal = kladny_exp_D;
 						}
@@ -470,11 +467,18 @@ int get_token(FILE *f,string *str){
 /**************************************************************************/
 /**************************************************************************/
 			case char_uvodzovky :
-				if(c != '"'){
-					read = TRUE;
-					add_char_to_String(str,c);
-				}else{
+				add_char_to_String(str,c);
+				if(c == EOF){
+					str->str[str->length-1] ='\0';
 					read = FALSE;
+					returnVal = ERR_LEX_ERR;
+				}else if(c == '\n'){
+					str->str[str->length-1] ='\0';
+					read = FALSE;
+					returnVal = ERR_LEX_ERR;
+				}else if(c == '"'){
+					read = FALSE;
+					str->str[str->length-1] ='\0';
 					returnVal = is_string;
 				}
 				break;
