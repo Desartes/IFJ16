@@ -101,7 +101,7 @@ int compare_keywords(string *s){
 		return kw_while;
 	if(!strcmp(s->str,"run"))
 		return kw_run;
-	if(!strcmp(s->str,"main"))
+	if(!strcmp(s->str,"Main"))
 		return kw_main;
 	return FALSE;
 }

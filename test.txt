@@ -1,5 +1,8 @@
 class Main
 {
+	
+	class Blyat {}
+
 	static void run() {
 		ifj16.print("Hello World !"); /* jkdbsdf
 	}
