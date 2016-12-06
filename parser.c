@@ -50,7 +50,8 @@ int root() {
 							if ( class_body() == ERR_OK ) {
 								return root();
 							} else {
-								break;
+								printf("Error\n");
+								return ERR_SYNTAX_ERR;
 							}
 						default:
 							printf("Error %d\n", token);
