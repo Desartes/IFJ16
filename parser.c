@@ -23,7 +23,11 @@ int main(void)
 	init_string(s);
 
 	first_time = 1;
-	root();
+
+	int x;
+	while( (x = get_token(f, s)) != EOF ) {
+		printf("%s : %d\n", s->str, x);
+	}
 
 
 
@@ -76,15 +80,14 @@ int root() {
 							return ERR_SYNTAX_ERR;
 					}
 			}
-		
-		
+			
 		case EOF:
 			printf("End of file\n");
 			first_time = 0;
 			return 0;
 		
 		default:
-			printf("Error : %d\n", ERR_SYNTAX_ERR);
+			printf("Error : %d\n", token);
 			return ERR_SYNTAX_ERR;
 	}
 
@@ -97,10 +100,27 @@ int root() {
 int class_body() {
 	int token;
 
-	if ( (token = get_token(f, s)) == char_PMZatvorka ) {
-		printf("} Success : %d\n", token);
-		return ERR_OK;
-	} else {
-		return ERR_SYNTAX_ERR;
+	switch( (token = get_token(f, s)) ) {
+		case kw_static:
+
+			case char_bod_ciarka:
+				return class_body();
+
+			default:
+				return ERR_SYNTAX_ERR;
+			
+		case char_PMZatvorka:
+			return ERR_OK;
+		default:
+			return ERR_SYNTAX_ERR;
 	}
+
+
+
+	// if ( (token = get_token(f, s)) == char_PMZatvorka ) {
+	// 	printf("} Success : %d\n", token);
+	// 	return ERR_OK;
+	// } else {
+	// 	return ERR_SYNTAX_ERR;
+	// }
 }
