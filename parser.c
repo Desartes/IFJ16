@@ -2,12 +2,16 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "scanner.h"
+#include "err.h"
 // #include "scanner.c"
 
-int program();
+int root();
+int class_body();
 
-	FILE *f;
-	string *s;
+FILE *f;
+string *s;
+
+int first_time;
 
 int main(void)
 {
@@ -18,53 +22,84 @@ int main(void)
 		return -1;
 	init_string(s);
 
-
-	program();
+	first_time = 1;
+	root();
 
 
 
 	return 0;
 }
 
-int first_time = 1;
 
-int program() {
+int root() {
 	int token;
 
-/* Class Main { 
+/* Class Main/ID { // root
 ***********************************************************************/
 	switch( token = get_token(f,s) ) {
+
 		case kw_class:
-			printf("Class Success : %d\n", token);
+			printf("Class Success : %s\n", s->str);
 			switch( token = get_token(f,s) ) {
 				case kw_main:
-					printf("Main Success : %d\n", token);
-					if ( (token = get_token(f,s)) == char_LMZatvorka) {
-						printf("{ Success : %d\n", token);
-						return program();
-					}
-				case is_id:
-					printf("ID Success : %d\n", token);
-					if ( (token = get_token(f,s)) == char_LMZatvorka) {
-						printf("{ Success : %d\n", token);
-						return program();
+					printf("Main Success : %s\n", s->str);
+					switch( token = get_token(f,s) ) {
+						case char_LMZatvorka:
+							first_time = 0;
+							printf("{ Success : %d\n", token);
+							if ( class_body() == ERR_OK ) {
+								return root();
+							} else {
+								break;
+							}
+						default:
+							printf("Error %d\n", token);
+							return ERR_SYNTAX_ERR;
 					}
 
+				case is_id:
+					if (first_time)	{
+						printf("Error\n");
+						return 1;
+					}
+
+					printf("ID Success : %s\n", s->str);
+					switch( token = get_token(f,s) ) {
+						case char_LMZatvorka:
+							first_time = 0;
+							printf("{ Success : %d\n", token);
+							if ( class_body() == ERR_OK ) {
+								return root();
+							}
+						default:
+							return ERR_SYNTAX_ERR;
+					}
 			}
-		case char_PMZatvorka:
-			printf("} Success : %d\n", token);
-				return program();
+		
+		
 		case EOF:
 			printf("End of file\n");
 			first_time = 0;
 			return 0;
+		
 		default:
-			printf("Error\n");
-			return 1;
+			printf("Error : %d\n", ERR_SYNTAX_ERR);
+			return ERR_SYNTAX_ERR;
 	}
 
 /**********************************************************************/
 
 
 	return 0;
+}
+
+int class_body() {
+	int token;
+
+	if ( (token = get_token(f, s)) == char_PMZatvorka ) {
+		printf("} Success : %d\n", token);
+		return ERR_OK;
+	} else {
+		return ERR_SYNTAX_ERR;
+	}
 }
