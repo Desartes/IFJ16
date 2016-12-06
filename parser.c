@@ -26,48 +26,45 @@ int main(void)
 	return 0;
 }
 
-int first_time = 0;
+int first_time = 1;
 
 int program() {
-	int x;
+	int token;
+
 /* Class Main { 
 ***********************************************************************/
-	if (first_time == 0) {
-		if ( (x = get_token(f,s)) == kw_class) {
-			if ( (x = get_token(f,s)) == kw_main ) {
-				if ((x = get_token(f,s)) == char_LMZatvorka) {
-					first_time++;
-					program();
-				} else {
-					printf("Error 1 %d\n", x);
-					// Error
-				}
-			} else {
-				printf("Error 2 %d\n", x);
-				// Error
+	switch( token = get_token(f,s) ) {
+		case kw_class:
+			printf("Class Success : %d\n", token);
+			switch( token = get_token(f,s) ) {
+				case kw_main:
+					printf("Main Success : %d\n", token);
+					if ( (token = get_token(f,s)) == char_LMZatvorka) {
+						printf("{ Success : %d\n", token);
+						return program();
+					}
+				case is_id:
+					printf("ID Success : %d\n", token);
+					if ( (token = get_token(f,s)) == char_LMZatvorka) {
+						printf("{ Success : %d\n", token);
+						return program();
+					}
+
 			}
-		} else {
-			printf("Error 3 %d\n", x);
-			// Error
-		}
-	} else {
-		if ( (x = get_token(f,s)) == kw_class) {
-			if ( (x = get_token(f,s)) == is_id ) {
-				if ((x = get_token(f,s)) == char_LMZatvorka) {
-					/* code */
-				} else {
-					printf("Error 1 %d\n", x);
-						// Error
-				}
-			} else {
-				printf("Error 2 %d\n", x);
-			// Error
-			}
-		} else {
-			printf("Error 3 %d\n", x);
-			// Error
-		}
+		case char_PMZatvorka:
+			printf("} Success : %d\n", token);
+				return program();
+		case EOF:
+			printf("End of file\n");
+			first_time = 0;
+			return 0;
+		default:
+			printf("Error\n");
+			return 1;
 	}
+
 /**********************************************************************/
+
+
 	return 0;
 }
