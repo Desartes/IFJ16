@@ -61,7 +61,7 @@ int root() {
 				case is_id:
 					if (first_time)	{
 						printf("Error\n");
-						return 1;
+						return ERR_SYNTAX_ERR;
 					}
 
 					printf("ID Success : %s\n", s->str);
