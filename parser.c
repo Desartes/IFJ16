@@ -382,11 +382,51 @@ int func_body() {
 					return ERR_SYNTAX_ERR;		
 			}
 
+		case kw_if:
+		printf("IF\n");
+			switch(token = get_token(f,s)) {
+				case char_LZatvorka:
+				printf("(\n");
+					if ( (result = bool_expr()) == ERR_OK && (token = get_token(f,s)) == char_LMZatvorka )	{
+						printf("{\n");
+						if ((result = func_body()) == ERR_OK) {
+							if ((token = get_token(f,s)) == kw_else && (token = get_token(f,s)) == char_LMZatvorka) {
+								printf("ELSE\n{\n");
+								if ((result = func_body()) == ERR_OK) {
+									return func_body();
+								} else {
+									return result;
+								}
+							} else {
+								return ERR_SYNTAX_ERR;
+							}
+						} else {
+							return ERR_SYNTAX_ERR;
+						}
+					} else {
+						if (token != char_LMZatvorka) {
+							return ERR_SYNTAX_ERR;
+						}
+						return result;
+					}
+				case char_PMZatvorka:
+					printf("}\n");
+					return ERR_OK;
+				default:
+					return ERR_SYNTAX_ERR;		
+			}
+
+
+
+
+
+
+
 		case kw_return:
 			printf("%s\n", s->str);
 
 		case char_PMZatvorka:
-			printf("} func body\n");
+			printf("}\n");
 			return ERR_OK;
 		default:
 			return ERR_SYNTAX_ERR;
