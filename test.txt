@@ -1,32 +1,21 @@
 class Main
 {
-	static int blyat() {
-		while(blah) {
-			x = 4;
-
-				if(akdjh) {
-					print("meh");
-					x = y + 3;
-					while(sdf) {
-						if(sdf) {
-							x = meh;
-						} else {
-							x = meh();
-						}
-					}
-				} else {
-					program();
-				}
-		}
-		return 9;
-	}
-	static String ahoj() {
-		x = "Ahoj svet";
-		print(x);
-	}
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
+static void run()
+{
+int a;
+print("Zadejte cislo pro vypocet faktorialu: ");
+a = readInt();
+int vysl;
+if (a < 0) { // nacitani zaporneho cisla nemusite podporovat
+print("Faktorial nelze spocitat!\n");
+}
+else {
+vysl = 1;
+while (a > 0) {
+vysl = vysl * a;
+a = a - 1;
+}
+print("Vysledek je: " + vysl + "\n");
+}
+}
 }

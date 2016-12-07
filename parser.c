@@ -241,6 +241,26 @@ int class_body() {
 										return result;
 									}
 							}
+						case kw_run:
+						printf("%s\n", s->str);
+							switch( token = get_token(f,s) ) {
+								case char_LZatvorka:
+									printf("(\n");
+									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
+										printf("{\n");
+										if ((result = func_body()) == ERR_OK) {
+											return class_body();
+										} else {
+											return result;
+										}
+									} else {
+										if (token != char_LMZatvorka) {
+											return ERR_SYNTAX_ERR;
+										}
+										return result;
+									}
+							}
+
 
 						default:
 							return ERR_SYNTAX_ERR;
