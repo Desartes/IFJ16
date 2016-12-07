@@ -268,7 +268,7 @@ int class_body() {
 	}
 
 }
-int func_params() {
+int func_params() { // -------------------------------------------------------------------------------------------------------- TODO
 	int token;
 	while( (token = get_token(f,s) ) != char_PZatvorka ) {
 		printf("Param success : %s\n", s->str);
@@ -443,7 +443,7 @@ int func_body() {
 
 
 }
-int expression_solve() {
+int expression_solve() { // -------------------------------------------------------------------------------------------------------- TODO
 	int token;
 	while( (token = get_token(f,s) ) != char_bod_ciarka ) {
 		printf("%s : %d\n", s->str, token);
@@ -451,7 +451,7 @@ int expression_solve() {
 	printf("Success ;\n");
 	return ERR_OK;
 }
-int bool_expr() {
+int bool_expr() { // -------------------------------------------------------------------------------------------------------- TODO
 	int token;
 	while( (token = get_token(f,s) ) != char_PZatvorka ) {
 		printf("%s\n", s->str);
