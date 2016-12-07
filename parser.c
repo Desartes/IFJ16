@@ -15,7 +15,6 @@ int bool_expr();
 FILE *f;
 string *s;
 
-int first_time;
 
 int main(void)
 {
@@ -26,7 +25,6 @@ int main(void)
 		return -1;
 	init_string(s);
 
-	first_time = 1;
 	printf("Result of parse : %d\n", root());
 
 
@@ -56,7 +54,6 @@ int root() {
 					printf("Main Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
-							first_time = 0;
 							printf("{ Success : %d\n", token);
 							if ( (result = class_body()) == ERR_OK ) {
 								return root();
@@ -70,15 +67,9 @@ int root() {
 					}
 
 				case is_id:
-					if (first_time)	{
-						printf("Error\n");
-						return ERR_SYNTAX_ERR;
-					}
-
 					printf("ID Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
-							first_time = 0;
 							printf("{ Success : %d\n", token);
 							if ( (result = class_body()) == ERR_OK ) {
 								return root();
@@ -92,7 +83,6 @@ int root() {
 			
 		case EOF:
 			printf("End of file\n");
-			first_time = 0;
 			return 0;
 		
 		default:

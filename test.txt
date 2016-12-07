@@ -1,3 +1,38 @@
+class Yay
+{
+	static int blyat() {
+		while(blah) {
+			x = 4;
+
+				if(akdjh) {
+					print("meh");
+					x = y + 3;
+					while(sdf) {
+						if(sdf) {
+							x = meh;
+						} else {
+							x = meh();
+						}
+					}
+				} else {
+					program();
+				}
+		}
+		return 9;
+	}
+	static String ahoj() {
+		x = "Ahoj svet";
+		print(x);
+	}
+	ahoj(fgh);
+	ahoj(fgh);
+	ahoj(fgh);
+	ahoj(fgh);
+	ahoj(fgh);
+}
+
+// Komentik vyjebany
+
 class Main
 {
 	static int x;
@@ -33,38 +68,4 @@ class Game
 			}
 		return;
 	} // end of static v
-}
-
-
-class Yay
-{
-	static int blyat() {
-		while(blah) {
-			x = 4;
-
-				if(akdjh) {
-					print("meh");
-					x = y + 3;
-					while(sdf) {
-						if(sdf) {
-							x = meh;
-						} else {
-							x = meh();
-						}
-					}
-				} else {
-					program();
-				}
-		}
-		return 9;
-	}
-	static String ahoj() {
-		x = "Ahoj svet";
-		print(x);
-	}
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
 }
