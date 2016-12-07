@@ -1,7 +1,12 @@
 class Main
 {
-	static int blyat(String meh) {
-		x = 5;
+	static int blyat() {
+		while(blah) {
+			x = 4;
 
+			while(meh) {
+				x = meh();
+			}
+		}
 	}
 }
