@@ -7,6 +7,8 @@
 
 int root();
 int class_body();
+int func_body();
+int func_params();
 
 FILE *f;
 string *s;
@@ -23,11 +25,13 @@ int main(void)
 	init_string(s);
 
 	first_time = 1;
+	printf("Result of parse : %d\n", root());
 
-	int x;
-	while( (x = get_token(f, s)) != EOF ) {
-		printf("%s : %d\n", s->str, x);
-	}
+
+	// int x;
+	// while( (x = get_token(f, s)) != EOF ) {
+	// 	printf("%s : %d\n", s->str, x);
+	// }
 
 
 
@@ -37,6 +41,7 @@ int main(void)
 
 int root() {
 	int token;
+	int result;
 
 /* Class Main/ID { // root
 ***********************************************************************/
@@ -51,11 +56,11 @@ int root() {
 						case char_LMZatvorka:
 							first_time = 0;
 							printf("{ Success : %d\n", token);
-							if ( class_body() == ERR_OK ) {
+							if ( (result = class_body()) == ERR_OK ) {
 								return root();
 							} else {
 								printf("Error\n");
-								return ERR_SYNTAX_ERR;
+								return result;
 							}
 						default:
 							printf("Error %d\n", token);
@@ -73,8 +78,10 @@ int root() {
 						case char_LMZatvorka:
 							first_time = 0;
 							printf("{ Success : %d\n", token);
-							if ( class_body() == ERR_OK ) {
+							if ( (result = class_body()) == ERR_OK ) {
 								return root();
+							} else {
+								return result;
 							}
 						default:
 							return ERR_SYNTAX_ERR;
@@ -99,28 +106,129 @@ int root() {
 
 int class_body() {
 	int token;
+	int result;
 
 	switch( (token = get_token(f, s)) ) {
 		case kw_static:
+			printf("%s\n", s->str);
+			switch( token = get_token(f,s) ) {
+				case kw_int:
+					printf("%s\n", s->str);
+					switch( token = get_token(f, s) ) {
+						case is_id:
+						printf("%s\n", s->str);
+							switch( token = get_token(f,s) ) {
+								case char_LZatvorka:
+									printf("(\n");
+									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
+										printf("{\n");
+										if (func_body() == ERR_OK) {
+											return class_body();
+										}
+									} 
+							}
 
-			case char_bod_ciarka:
-				return class_body();
+						default:
+							return ERR_SYNTAX_ERR;
+					}
+				case kw_double:
+					printf("%s\n", s->str);
+					switch( token = get_token(f, s) ) {
+						case is_id:
+						printf("%s\n", s->str);
+							switch( token = get_token(f,s) ) {
+								case char_LZatvorka:
+									printf("(\n");
+									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
+										printf("{\n");
+										if (func_body() == ERR_OK) {
+											return class_body();
+										}
+									} else {
+										if (token != char_LMZatvorka) {
+											return ERR_SYNTAX_ERR;
+										}
+										return result;
+									}
+							}
 
-			default:
-				return ERR_SYNTAX_ERR;
+						default:
+							return ERR_SYNTAX_ERR;
+					}
+				case kw_string:
+					printf("%s\n", s->str);
+					switch( token = get_token(f, s) ) {
+						case is_id:
+						printf("%s\n", s->str);
+							switch( token = get_token(f,s) ) {
+								case char_LZatvorka:
+									printf("(\n");
+									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
+										printf("{\n");
+										if (func_body() == ERR_OK) {
+											return class_body();
+										}
+									} else {
+										if (token != char_LMZatvorka) {
+											return ERR_SYNTAX_ERR;
+										}
+										return result;
+									}
+							}
+
+						default:
+							return ERR_SYNTAX_ERR;
+					}
+				case kw_void:
+					printf("%s\n", s->str);
+					switch( token = get_token(f, s) ) {
+						case is_id:
+						printf("%s\n", s->str);
+							switch( token = get_token(f,s) ) {
+								case char_LZatvorka:
+									printf("(\n");
+									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
+										printf("{\n");
+										if (func_body() == ERR_OK) {
+											return class_body();
+										}
+									} else {
+										if (token != char_LMZatvorka) {
+											return ERR_SYNTAX_ERR;
+										}
+										return result;
+									}
+							}
+
+						default:
+							return ERR_SYNTAX_ERR;
+					}
+
+				default:
+					return ERR_SYNTAX_ERR;
+			}
 			
 		case char_PMZatvorka:
+			printf("Success : }\n");
 			return ERR_OK;
 		default:
 			return ERR_SYNTAX_ERR;
 	}
 
-
-
-	// if ( (token = get_token(f, s)) == char_PMZatvorka ) {
-	// 	printf("} Success : %d\n", token);
-	// 	return ERR_OK;
-	// } else {
-	// 	return ERR_SYNTAX_ERR;
-	// }
+}
+int func_params() {
+	int token;
+	while( (token = get_token(f,s) ) != char_PZatvorka ) {
+		printf("Param success : %s\n", s->str);
+	}
+	printf(")\n");
+	return ERR_OK;
+}
+int func_body() {
+	int token;
+	while( (token = get_token(f,s) ) != char_PMZatvorka ) {
+		printf("function body success : %s\n", s->str);
+	}
+	printf("}\n");
+	return ERR_OK;
 }
