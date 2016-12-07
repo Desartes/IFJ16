@@ -249,6 +249,16 @@ int class_body() {
 				default:
 					return ERR_SYNTAX_ERR;
 			}
+
+		case is_id:
+			switch(token = get_token(f,s)) {
+				case char_LZatvorka:
+					if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
+						return class_body();
+					} else {
+						return result;
+					}
+			}
 			
 		case char_PMZatvorka:
 			printf("Class body : }\n");
@@ -416,14 +426,13 @@ int func_body() {
 					return ERR_SYNTAX_ERR;		
 			}
 
-
-
-
-
-
-
 		case kw_return:
-			printf("%s\n", s->str);
+			printf("return\n");
+			if ( (result = expression_solve()) == ERR_OK ) {
+			 	return func_body();
+			 } else {
+			 	return result;
+			 }
 
 		case char_PMZatvorka:
 			printf("}\n");
