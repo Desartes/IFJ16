@@ -1,10 +1,7 @@
 class Main
 {
-	static int blyat(String jedna, int dva) {}
-}
-class Run
-{
-	//static int x = 5;
-	static String blyat(String jedna, int dva) {}
-	static double blyat() {}
+	static int blyat(String meh) {
+		x = 5;
+
+	}
 }
