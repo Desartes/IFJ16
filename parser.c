@@ -16,27 +16,29 @@ FILE *f;
 string *s;
 
 
-int main(void)
-{
-	f = fopen("test.txt","r");
-	s = malloc(sizeof(string));
+// int main(void)
+// {
+// 	f = fopen("test.txt","r");
+// 	s = malloc(sizeof(string));
 
-	// if(f == NULL || s == NULL)
-	// 	return -1;
-	// init_string(s);
+// 	// if(f == NULL || s == NULL)
+// 	// 	return -1;
+// 	// init_string(s);
 
-	// printf("Result of parse : %d\n", root());
-
-
-	int x;
-	while( (x = get_token(f, s)) != EOF ) {
-		printf("Token s->str -> %s \nToken value-> %d\n\n", s->str, x);
-	}
+// 	// printf("Result of parse : %d\n", root());
 
 
+// 	int x;
+// 	while( (x = get_token(f, s)) != EOF ) {
+// 		printf("%d String       %s\n", x, s->str);
+// 		printf("%d Alloc        %d\n", x, s->alloc);
+// 		printf("%d Length       %d\n\n", x, s->length);
+// 	}
 
-	return 0;
-}
+
+
+// 	return 0;
+// }
 
 
 int root() {
