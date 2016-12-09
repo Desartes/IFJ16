@@ -21,17 +21,17 @@ int main(void)
 	f = fopen("test.txt","r");
 	s = malloc(sizeof(string));
 
-	if(f == NULL || s == NULL)
-		return -1;
-	init_string(s);
+	// if(f == NULL || s == NULL)
+	// 	return -1;
+	// init_string(s);
 
-	printf("Result of parse : %d\n", root());
+	// printf("Result of parse : %d\n", root());
 
 
-	// int x;
-	// while( (x = get_token(f, s)) != EOF ) {
-	// 	printf("%s : %d\n", s->str, x);
-	// }
+	int x;
+	while( (x = get_token(f, s)) != EOF ) {
+		printf("Token s->str -> %s \nToken value-> %d\n\n", s->str, x);
+	}
 
 
 
