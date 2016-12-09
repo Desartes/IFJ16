@@ -395,32 +395,31 @@ int get_token(FILE *f,string *str){
 						read = TRUE;
 						state = is_double;
 						break;
-				}
+					}
 				if(!isdigit(c)){
 					if(c == '.')
 						next_double++;
 					next_char++;
-					break;
 				}
 				if(c == EOF){
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
 				}
-				if(next_double == 1){
-					if(!isspecific(c) || c == '\0' || isspace(c)){
-						read = FALSE;
+				if(c == '\0' || isspace(c) || c == ';' || !isspecific(c) || c == EOF){
+					if( c == ';' || !isspecific(c) || c == EOF)
+						next_char--;
+					read = FALSE;
+					if(next_char == 1 && next_double == 1){
 						returnVal = is_double;
 					}
-
-				}else if(next_double == 0){
-					if(!isspecific(c) || c == '\0' || isspace(c)){
-						read = FALSE;
+					else if(next_char == 0){
 						returnVal = is_int;
+					}	
+					else{
+						returnVal = is_id;
 					}
-
-				}else{
-					read = FALSE;
-					returnVal = ERR_LEX_ERR;
+					str->str[str->length-1] ='\0';
+					ungetc(c,f);
 				}
 				break;
 /**************************************************************************/
