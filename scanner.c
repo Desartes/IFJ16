@@ -396,28 +396,20 @@ int get_token(FILE *f,string *str){
 						state = is_double;
 						break;
 					}
-				if(!isdigit(c)){
-					if(c == '.')
-						next_double++;
-					next_char++;
-				}
-				if(c == EOF){
+				if(c == '.'){
+					next_double++;
+				}else if(c == EOF){
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
-				}
-				if(c == '\0' || isspace(c) || c == ';' || !isspecific(c) || c == EOF){
-					if( c == ';' || !isspecific(c) || c == EOF)
-						next_char--;
-					read = FALSE;
-					if(next_char == 1 && next_double == 1){
+				}else if(isdigit(c)){
+					if(next_double == 1){
 						returnVal = is_double;
-					}
-					else if(next_char == 0){
+					}else{
 						returnVal = is_int;
-					}	
-					else{
-						returnVal = is_id;
 					}
+				
+				}else{
+					read = FALSE;
 					str->str[str->length-1] ='\0';
 					ungetc(c,f);
 				}
