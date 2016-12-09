@@ -175,7 +175,7 @@ int get_token(FILE *f,string *str){
 						case '|':	read = TRUE;	state = char_pipe;				break;
 						case '&':	read = TRUE;	state = char_amperesand;		break;
 						case '\\':	read = TRUE;	state = char_backslash;			break;
-						default :	read = FALSE;	returnVal =	ERR_LEX_ERR;		
+						default :	read = FALSE;	err(ERR_LEX_ERR);		
 					}
 				}
 				break;
@@ -345,7 +345,7 @@ int get_token(FILE *f,string *str){
 				add_char_to_String(str,c);
 					if(c == EOF){
 						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 						str->str[str->length-1] ='\0';
 					}else if(!isspecific(c)){
 						read = FALSE;
@@ -373,7 +373,7 @@ int get_token(FILE *f,string *str){
 
 					if(c == EOF){
 						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 						str->str[str->length-1] ='\0';
 					}else if(!isspecific(c)){
 						read = FALSE;
@@ -401,7 +401,7 @@ int get_token(FILE *f,string *str){
 					next_double++;
 				}else if(c == EOF){
 					read = FALSE;
-					returnVal = ERR_LEX_ERR;
+					err(ERR_LEX_ERR);
 				}else if(isdigit(c)){
 					if(next_double == 1){
 						returnVal = is_double;
@@ -431,7 +431,7 @@ int get_token(FILE *f,string *str){
 							returnVal = kladny_exp;
 						}else{
 							read = FALSE;
-							returnVal = ERR_LEX_ERR;
+							err(ERR_LEX_ERR);
 						}
 					}
 					if(next_char != 1 && (c == '+' || c == '-' )){
@@ -479,7 +479,7 @@ int get_token(FILE *f,string *str){
 				if(c == EOF){
 					str->str[str->length-1] ='\0';
 					read = FALSE;
-					returnVal = ERR_LEX_ERR;
+					err(ERR_LEX_ERR);
 				}else if(c == '\\'){
 					c = fgetc(f);
 					if(c == 'n'){
@@ -494,12 +494,12 @@ int get_token(FILE *f,string *str){
 						str->str[str->length-1] = '\0';
 					}else{
 						read = FALSE;
-						returnVal = ERR_LEX_ERR;	
+						err(ERR_LEX_ERR);	
 					}
 				}else if(c == '\n'){
 					str->str[str->length-1] ='\0';
 					read = FALSE;
-					returnVal = ERR_LEX_ERR;
+					err(ERR_LEX_ERR);;
 				}else if(c == '"'){
 					read = FALSE;
 					str->str[str->length-1] ='\0';
@@ -530,7 +530,7 @@ int get_token(FILE *f,string *str){
 						str->str[0] ='\\';
 					}else{
 						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 					}
 					c = fgetc(f);
 					if(c == '\''){
@@ -538,7 +538,7 @@ int get_token(FILE *f,string *str){
 						returnVal = is_char;
 					}else{
 						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 					}
 
 				}else{
@@ -548,7 +548,7 @@ int get_token(FILE *f,string *str){
 						returnVal = is_char;
 					}else{
 						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 					}
 				}
 				break;
