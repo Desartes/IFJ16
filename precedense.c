@@ -36,7 +36,7 @@ int main()
 	f = fopen("prec_test.txt","r");
 	s = malloc(sizeof(string));
 	int x;
-	get_token(f, s);
+	// get_token(f, s);
 	// while( (x = get_token(f, s)) != EOF ) {
 	// 	printf("%d String       %s\n", x, s->str);
 	// 	printf("%d Alloc        %d\n", x, s->alloc);
@@ -55,53 +55,59 @@ int main()
 /*  6 $   */ { char_mensi, char_mensi, char_mensi, char_mensi, ' ', char_mensi, ' ' }
 };
 
-	// stack_item *dolar;
-	// dolar = malloc(sizeof(stack_item));
-	// dolar->id = 6;
+	stack_item *dolar;
+	dolar = malloc(sizeof(stack_item));
+	dolar->id = 6;
 
-	// int token;
-	// int pocitadlo = 0;
+	int token;
+	int pocitadlo = 0;
 
-	// push(dolar);
-	// 	int popped = 0;
+	push(dolar);
+		int popped = 0;
 
-	// while (  ((token = get_token(f,s)) != char_PZatvorka) || (pocitadlo >= 0) ) {
-	// 	printf("%s\n", s->str);
-	// 	stack_item *item;
-	// 	item = malloc(sizeof(stack_item));
-	// 	if (token == char_PZatvorka) {
-	// 		pocitadlo--;
-	// 		item = dolar;
-	// 	} else {
-	// 		item->id = token_type(token);
-	// 		item->token = token;
-	// 		item->value = malloc(sizeof(string));
-	// 		item->value->str = (s->str);
-	// 	}
+	while (  ((token = get_token(f,s)) != char_PZatvorka) || (pocitadlo > -1) ) {
+		string *temp;
+		temp = malloc(sizeof(string));
+		copy_string(s, temp);
+		stack_item *item;
+		item = malloc(sizeof(stack_item));
+		if (token == char_PZatvorka) {
+			pocitadlo--;
+			item = dolar;
+		} else {
+			if (token == char_LZatvorka) {
+				pocitadlo++;
+			}
+			item->id = token_type(token);
+			item->token = token;
+			item->value = temp;
+		}
 
-	// 	do {
-	// 		// if (peek()->id == dolar->id) {
-	// 		// 	return 1;
-	// 		// }
-	// 		if( (table[peek()->id][item->id] == char_mensi) || (table[peek()->id][item->id] == char_rovnasa) ) {
-	// 			push(item);
-	// 			popped = 0;
-	// 			// continue;
-	// 		} else {
-	// 			stack_item *blyat;
-	// 			blyat = malloc(sizeof(stack_item));
-	// 			blyat->value = malloc(sizeof(string));	
-	// 			blyat = pop();
-	// 			printf("%s\n", blyat->value->str);
-	// 			popped = 1;
-	// 		}
-	// 		if (item == dolar && peek() == dolar){
-	// 			return ERR_OK;
-	// 		}
+		do {
+			if( (table[peek()->id][item->id] == char_mensi) || (table[peek()->id][item->id] == char_rovnasa) ) {
+				push(item);
+				popped = 0;
+				// continue;
+			} else {
+				// if ( strcmp((table[peek()->id][item->id]), "") == 0 ) {
+				// 	return ERR_SYNTAX_ERR;
+				// }
+				printf("%d\n", peek());
+
+				stack_item *blyat;
+				blyat = malloc(sizeof(stack_item));
+				blyat->value = malloc(sizeof(string));	
+				blyat = pop();
+				printf("%s : ", blyat->value->str);
+				popped = 1;
+			}
+			if (item == dolar && peek() == dolar){
+				return ERR_OK;
+			}
 			
-	// 	} while (popped);
+		} while (popped);
 		
-	// }
+	}
 
 	return 0;
 }
