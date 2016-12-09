@@ -141,6 +141,7 @@ int get_token(FILE *f,string *str){
 					read = TRUE;
 					state = State_for_digit;
 					add_char_to_String(str,c);
+					returnVal = is_int;
 				}
 				else if(c == '_' || c == '$'){
 					add_char_to_String(str,c);
