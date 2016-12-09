@@ -40,6 +40,8 @@
 #define char_mensi		60 // <
 #define char_vacsi		61 // >
 #define char_vykricnik	62 // !
+#define posun_dolava	63
+#define posun_doprava	64
 
 #define char_bodka 		70 // .
 #define char_podtr		71 // _
@@ -106,6 +108,7 @@
 #define is_int			301
 #define is_double		302
 #define is_id			303
+#define is_char			304
 
 typedef struct{
 	char *str;
@@ -152,6 +155,17 @@ int compare_keywords(string *s);
  *
  * @return     The token.
  */
+
+/**
+ * @brief      { function_description }
+ *
+ * @param      s1    The s 1
+ * @param      s2    The s 2
+ *
+ * @return     { description_of_the_return_value }
+ */
+int copy_string(string *str1,string *str2);
+
 int get_token(FILE *f, string *s);
 /**
  * @brief      { function_description }

@@ -1,5 +1,15 @@
 #include "scanner.h"
 #include "err.h"
+int copy_string(string *str1,string *str2){
+	str2->str = (char *) malloc(sizeof(str1->length));
+	if(str2->str == NULL)
+		return ERR_INTERNAL_ERR;
+	strcpy(str2->str,str1->str);
+	str2->length = str1->length;
+	str2->alloc = str1->alloc;
+	return TRUE;
+}
+
 int isspecific(char c){
 	switch(c){
 		case '+':	return 0;
@@ -155,7 +165,7 @@ int get_token(FILE *f,string *str){
 						case ':':	read = FALSE;	returnVal = char_dvoj_bodka;	break;
 						case ';':	read = FALSE;	returnVal = char_bod_ciarka;	break;
 						case '%':	read = FALSE;	returnVal = char_percento;		break;
-						case '\'':	read = FALSE;	returnVal = char_apostrof;		break;
+						case '\'':	read = TRUE;	state = char_apostrof;			break;
 						case '\"':	read = TRUE;	state = char_uvodzovky;			break;
 						case '<':	read = TRUE;	state = char_mensi;				break;
 						case '>':	read = TRUE;	state = char_vacsi;				break;
@@ -235,7 +245,10 @@ int get_token(FILE *f,string *str){
 				if( c == '='){
 					read = FALSE;
 					returnVal = char_mensirovny;
-				}else{
+				}else if(c == '<'){
+					read = FALSE;
+					returnVal = posun_dolava;
+				}else{	
 					read = FALSE;
 					returnVal = char_mensi;
 					ungetc(c,f);
@@ -246,6 +259,9 @@ int get_token(FILE *f,string *str){
 				if(c == '='){
 					read = FALSE;
 					returnVal = char_vacsirovny;
+				}else if(c == '>'){
+					read = FALSE;
+					returnVal = posun_doprava;
 				}else{
 					read = FALSE;
 					returnVal = char_vacsi;
@@ -373,38 +389,38 @@ int get_token(FILE *f,string *str){
 
 /**************************************************************************/
 /**************************************************************************/
-
 			case State_for_digit :
 				add_char_to_String(str,c);
 				if(c == 'e' || c == 'E'){
 						read = TRUE;
 						state = is_double;
 						break;
-					}
+				}
 				if(!isdigit(c)){
 					if(c == '.')
 						next_double++;
 					next_char++;
+					break;
 				}
 				if(c == EOF){
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
 				}
-				if(c == '\0' || isspace(c) || c == ';' || !isspecific(c) || c == EOF){
-					if( c == ';' || !isspecific(c) || c == EOF)
-						next_char--;
-					read = FALSE;
-					if(next_char == 1 && next_double == 1){
+				if(next_double == 1){
+					if(!isspecific(c) || c == '\0' || isspace(c)){
+						read = FALSE;
 						returnVal = is_double;
 					}
-					else if(next_char == 0){
+
+				}else if(next_double == 0){
+					if(!isspecific(c) || c == '\0' || isspace(c)){
+						read = FALSE;
 						returnVal = is_int;
-					}	
-					else{
-						returnVal = is_id;
 					}
-					str->str[str->length-1] ='\0';
-					ungetc(c,f);
+
+				}else{
+					read = FALSE;
+					returnVal = ERR_LEX_ERR;
 				}
 				break;
 /**************************************************************************/
@@ -498,7 +514,54 @@ int get_token(FILE *f,string *str){
 					returnVal = is_string;
 				}
 				break;
+/**************************************************************************/
+/**************************************************************************/
+
+			case char_apostrof :
+				add_char_to_String(str,c);
+				if(c == '\\'){
+					c = fgetc(f);
+					if(c == 'n'){
+						read = FALSE;
+						str->str[0] ='\n';
+					}else if(c == 't'){
+						read = FALSE;
+						str->str[0] ='\t';
+					}else if(c == '\''){
+						read = FALSE;
+						str->str[0] ='\'';
+					}else if(c == '"'){
+						read = FALSE;
+						str->str[0] ='"';
+					}else if(c == '\\'){
+						read = FALSE;
+						str->str[0] ='\\';
+					}else{
+						read = FALSE;
+						returnVal = ERR_LEX_ERR;
+					}
+					c = fgetc(f);
+					if(c == '\''){
+						read = FALSE;
+						returnVal = is_char;
+					}else{
+						read = FALSE;
+						returnVal = ERR_LEX_ERR;
+					}
+
+				}else{
+					c = fgetc(f);
+					if(c == '\''){
+						read = FALSE;
+						returnVal = is_char;
+					}else{
+						read = FALSE;
+						returnVal = ERR_LEX_ERR;
+					}
+				}
+				break;
 		}
+
 	}
 	if(returnVal == kladny_exp){
 		returnVal = kladny_exp_I;
