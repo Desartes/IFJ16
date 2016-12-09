@@ -472,6 +472,22 @@ int get_token(FILE *f,string *str){
 					str->str[str->length-1] ='\0';
 					read = FALSE;
 					returnVal = ERR_LEX_ERR;
+				}else if(c == '\\'){
+					c = fgetc(f);
+					if(c == 'n'){
+						str->str[str->length-1] = '\n';
+					}else if(c == '"'){
+						str->str[str->length-1] = '"';
+					}else if(c == '\''){
+						str->str[str->length-1] = '\'';
+					}else if(c == 't'){
+						str->str[str->length-1] = '\'';
+					}else if(c == '0'){
+						str->str[str->length-1] = '\0';
+					}else{
+						read = FALSE;
+						returnVal = ERR_LEX_ERR;	
+					}
 				}else if(c == '\n'){
 					str->str[str->length-1] ='\0';
 					read = FALSE;
