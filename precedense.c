@@ -36,23 +36,27 @@ int main()
 	f = fopen("prec_test.txt","r");
 	s = malloc(sizeof(string));
 	int x;
-	// get_token(f, s);
 	// while( (x = get_token(f, s)) != EOF ) {
 	// 	printf("%d String       %s\n", x, s->str);
 	// 	printf("%d Alloc        %d\n", x, s->alloc);
 	// 	printf("%d Length       %d\n\n", x, s->length);
 	// }
 
-	const char table[7][7] = {
-//             0    1    2    3    4    5    6
-//             + -  * /  rel  (    )    ID   $
-/*  0 + - */ { char_vacsi, char_mensi, char_vacsi, char_mensi, char_vacsi, char_mensi, char_vacsi },
-/*  1 * / */ { char_vacsi, char_vacsi, char_vacsi, char_mensi, char_vacsi, char_mensi, char_vacsi },
-/*  2 rel */ { char_mensi, char_mensi, ' ', char_mensi, char_vacsi, char_mensi, char_vacsi },
-/*  3 (   */ { char_mensi, char_mensi, char_mensi, char_mensi, char_rovnasa, char_mensi, ' ' },
-/*  4 )   */ { char_vacsi, char_vacsi, char_vacsi, ' ', char_vacsi, ' ', char_vacsi },
-/*  5 id  */ { char_vacsi, char_vacsi, char_vacsi, ' ', char_vacsi, ' ', char_vacsi },
-/*  6 $   */ { char_mensi, char_mensi, char_mensi, char_mensi, ' ', char_mensi, ' ' }
+char precedence_table [14][14] = {	
+	{'>','>','<','<','>','>','>','>','>','>','<','>','<','>'},	
+	{'>','>','<','<','>','>','>','>','>','>','<','>','<','>'},	
+	{'>','>','>','>','>','>','>','>','>','>','<','>','<','>'},	
+	{'>','>','>','>','>','>','>','>','>','>','<','>','<','>'},
+	{'<','<','<','<','>','>','>','>','>','>','<','>','<','>'},
+	{'<','<','<','<','>','>','>','>','>','>','<','>','<','>'},	
+	{'<','<','<','<','>','>','>','>','>','>','<','>','<','>'},	
+	{'<','<','<','<','>','>','>','>','>','>','<','>','<','>'},
+	{'<','<','<','<','<','<','<','<','>','>','<','>','<','>'},	
+	{'<','<','<','<','<','<','<','<','>','>','<','>','<','>'},	
+	{'<','<','<','<','<','<','<','<','<','<','>','=','<',' '},
+	{'>','>','>','>','>','>','>','>','>','>',' ','>',' ','>'},
+	{'>','>','>','>','>','>','>','>','>','>',' ','>',' ','>'},
+	{'<','<','<','<','<','<','<','<','<','<','<',' ','<',' '},
 };
 
 	stack_item *dolar;
@@ -62,54 +66,87 @@ int main()
 	int token;
 	int pocitadlo = 0;
 
-	push(dolar);
-		int popped = 0;
+	int popped = 0;
 
-	while (  ((token = get_token(f,s)) != char_PZatvorka) || (pocitadlo > -1) ) {
-		string *temp;
-		temp = malloc(sizeof(string));
-		copy_string(s, temp);
-		stack_item *item;
+
+	stack_item *item;
+
+	int meh;
+	meh = 1;
+
+	push(dolar);
+	while( meh ) {
+		token = get_token(f,s);
 		item = malloc(sizeof(stack_item));
 		if (token == char_PZatvorka) {
-			pocitadlo--;
-			item = dolar;
+			meh = 0;
+			item->id = DOLAR;
 		} else {
-			if (token == char_LZatvorka) {
-				pocitadlo++;
-			}
+			string *s_temp;
+			s_temp = malloc(sizeof(string));
+			copy_string(s, s_temp);
 			item->id = token_type(token);
-			item->token = token;
-			item->value = temp;
+			item->value = s_temp;
 		}
-
+		printf("%d\n", (table[peek()->id][item->id]));
 		do {
-			if( (table[peek()->id][item->id] == char_mensi) || (table[peek()->id][item->id] == char_rovnasa) ) {
+			if ( (strcmp(table[peek()->id][item->id], "<") == 0) || (strcmp(table[peek()->id][item->id], "=") == 0) ) {
 				push(item);
-				popped = 0;
-				// continue;
+				break;
+				// printf("PUSH %d\n", item->id);
 			} else {
-				// if ( strcmp((table[peek()->id][item->id]), "") == 0 ) {
-				// 	return ERR_SYNTAX_ERR;
-				// }
-				printf("%d\n", peek());
-
-				stack_item *blyat;
-				blyat = malloc(sizeof(stack_item));
-				blyat->value = malloc(sizeof(string));	
-				blyat = pop();
-				printf("%s : ", blyat->value->str);
-				popped = 1;
+				printf("POP %d\n", pop()->id);
 			}
-			if (item == dolar && peek() == dolar){
-				return ERR_OK;
-			}
-			
-		} while (popped);
+		} while ((peek()->id != DOLAR) && (item->id != DOLAR));
 		
 	}
 
-	return 0;
+
+	// while (  ((token = get_token(f,s)) != char_PZatvorka) || (pocitadlo > -1) ) {
+	// 	string *temp;
+	// 	temp = malloc(sizeof(string));
+	// 	copy_string(s, temp);
+	// 	stack_item *item;
+	// 	item = malloc(sizeof(stack_item));
+	// 	if (token == char_PZatvorka) {
+	// 		pocitadlo--;
+	// 		item = dolar;
+	// 		// printf("%d\n\n", item->id);
+	// 	} else {
+	// 		if (token == char_LZatvorka) {
+	// 			pocitadlo++;
+	// 		}
+	// 		item->id = token_type(token);
+	// 		item->token = token;
+	// 		item->value = temp;
+	// 	}
+
+	// 	do {
+	// 		if( (table[peek()->id][item->id] == char_mensi) || (table[peek()->id][item->id] == char_rovnasa) ) {
+	// 			push(item);
+	// 			popped = 0;
+	// 			printf("PUSH %d\n", item->token);
+	// 			// continue;
+	// 		} else {
+
+	// 			stack_item *blyat;
+	// 			blyat = malloc(sizeof(stack_item));
+	// 			blyat->value = malloc(sizeof(string));	
+	// 			blyat = pop();
+	// 			printf("POP %d\n", item->token);
+
+	// 			popped = 1;
+	// 		}
+	// 		if (item->id == 6 && peek()->id == 6) {
+	// 			printf("%d\n", peek()->id);
+	// 			return ERR_OK;
+	// 		}
+			
+	// 	} while (popped);
+		
+	// }
+
+	return 1;
 }
 
 
@@ -212,7 +249,7 @@ int token_type(int symbol) {
         // case NT_EXPR:
         //     printf("E");
         default:
-            printf("%d", symbol);
+            printf("DEFAULT TOKEN TYPE %d", symbol);
             return -1;
     }
 }
