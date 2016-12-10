@@ -84,6 +84,15 @@
 
 #define kw_true			152
 #define kw_false		151
+#define kw_readInt		152
+#define kw_readDouble	153
+#define kw_readString	154	
+#define kw_length		155
+#define kw_print		156
+#define kw_substr		157
+#define kw_compare		158
+#define kw_find			159
+#define kw_sort			160
 
 #define buff_size 		256
 

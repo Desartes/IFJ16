@@ -4,6 +4,7 @@ int copy_string(string *str1,string *str2){
 	str2->str = (char *) malloc(sizeof(str1->length));
 	if(str2->str == NULL)
 		return ERR_INTERNAL_ERR;
+	init_string(str2);	
 	strcpy(str2->str,str1->str);
 	str2->length = str1->length;
 	str2->alloc = str1->alloc;
@@ -76,6 +77,25 @@ void free_string(string *s){
 }
 
 int compare_keywords(string *s){
+	if(!strcmp(s->str,"readInt"))
+		return kw_readInt;
+	if(!strcmp(s->str,"readDouble"))
+		return kw_readDouble;
+	if(!strcmp(s->str,"readString"))
+		return kw_readString;
+	if(!strcmp(s->str,"print"))
+		return kw_print;
+	if(!strcmp(s->str,"length"))
+		return kw_length;
+	if(!strcmp(s->str,"substr"))
+		return kw_substr;
+	if(!strcmp(s->str,"compare"))
+		return kw_compare;
+	if(!strcmp(s->str,"find"))
+		return kw_find;
+	if(!strcmp(s->str,"sort"))
+		return kw_sort;
+
 	if(!strcmp(s->str,"boolean"))
 		return kw_boolean;
 	if(!strcmp(s->str,"break"))
@@ -175,7 +195,7 @@ int get_token(FILE *f,string *str){
 						case '|':	read = TRUE;	state = char_pipe;				break;
 						case '&':	read = TRUE;	state = char_amperesand;		break;
 						case '\\':	read = TRUE;	state = char_backslash;			break;
-						default :	read = FALSE;	err(ERR_LEX_ERR);		
+						default :	read = FALSE;	returnVal = ERR_LEX_ERR;		
 					}
 				}
 				break;
@@ -345,7 +365,7 @@ int get_token(FILE *f,string *str){
 				add_char_to_String(str,c);
 					if(c == EOF){
 						read = FALSE;
-						err(ERR_LEX_ERR);
+						returnVal = ERR_LEX_ERR;
 						str->str[str->length-1] ='\0';
 					}else if(!isspecific(c)){
 						read = FALSE;
@@ -373,7 +393,7 @@ int get_token(FILE *f,string *str){
 
 					if(c == EOF){
 						read = FALSE;
-						err(ERR_LEX_ERR);
+						returnVal = ERR_LEX_ERR;
 						str->str[str->length-1] ='\0';
 					}else if(!isspecific(c)){
 						read = FALSE;
@@ -401,7 +421,7 @@ int get_token(FILE *f,string *str){
 					next_double++;
 				}else if(c == EOF){
 					read = FALSE;
-					err(ERR_LEX_ERR);
+					returnVal = ERR_LEX_ERR;
 				}else if(isdigit(c)){
 					if(next_double == 1){
 						returnVal = is_double;
@@ -431,7 +451,7 @@ int get_token(FILE *f,string *str){
 							returnVal = kladny_exp;
 						}else{
 							read = FALSE;
-							err(ERR_LEX_ERR);
+							returnVal = ERR_LEX_ERR;
 						}
 					}
 					if(next_char != 1 && (c == '+' || c == '-' )){
@@ -479,7 +499,7 @@ int get_token(FILE *f,string *str){
 				if(c == EOF){
 					str->str[str->length-1] ='\0';
 					read = FALSE;
-					err(ERR_LEX_ERR);
+					returnVal = ERR_LEX_ERR;
 				}else if(c == '\\'){
 					c = fgetc(f);
 					if(c == 'n'){
@@ -494,12 +514,12 @@ int get_token(FILE *f,string *str){
 						str->str[str->length-1] = '\0';
 					}else{
 						read = FALSE;
-						err(ERR_LEX_ERR);	
+						returnVal = ERR_LEX_ERR;	
 					}
 				}else if(c == '\n'){
 					str->str[str->length-1] ='\0';
 					read = FALSE;
-					err(ERR_LEX_ERR);;
+					returnVal = ERR_LEX_ERR;
 				}else if(c == '"'){
 					read = FALSE;
 					str->str[str->length-1] ='\0';
@@ -530,7 +550,7 @@ int get_token(FILE *f,string *str){
 						str->str[0] ='\\';
 					}else{
 						read = FALSE;
-						err(ERR_LEX_ERR);
+						returnVal = ERR_LEX_ERR;
 					}
 					c = fgetc(f);
 					if(c == '\''){
@@ -538,7 +558,7 @@ int get_token(FILE *f,string *str){
 						returnVal = is_char;
 					}else{
 						read = FALSE;
-						err(ERR_LEX_ERR);
+						returnVal = ERR_LEX_ERR;
 					}
 
 				}else{
@@ -548,7 +568,7 @@ int get_token(FILE *f,string *str){
 						returnVal = is_char;
 					}else{
 						read = FALSE;
-						err(ERR_LEX_ERR);
+						returnVal = ERR_LEX_ERR;
 					}
 				}
 				break;
