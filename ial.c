@@ -32,8 +32,10 @@ int *mall_kmp(char *pod, int len_p)
 /*
 *	Knuth-Morris-Prattov algoritmus
 */
-int kmp(char *ret,char *pod,int len_r, int len_p)
+int kmp(char *ret,char *pod)
 {
+	int len_r=strlen(ret);
+	int len_p=strlen(pod);
 	int i;
 	int *pi_len = mall_kmp(pod, len_p);
 	int k=-1;
@@ -54,7 +56,7 @@ int kmp(char *ret,char *pod,int len_r, int len_p)
 		}
 	}
 	free(pi_len);
-	err(ERR_INTERNAL_ERR);
+	return 0;
 }
 
 
@@ -219,7 +221,6 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 	strncpy(nod->key_val,name,BUFFER_SIZE);
 	name=NULL;
 	nod->Rnode=nod->Lnode=NULL;
-
 	if((nod->f_data=(f_data *)malloc(sizeof(f_data)))==NULL)
 		err(ERR_INTERNAL_ERR);
 
@@ -231,9 +232,9 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 		case k_int:
 			nod->data=(int *) malloc(sizeof(int));
 			break;
-/*		case k_String:
-			nod->data=(char *) malloc(sizeof(strlen(???data???)));
-			break; */
+		case k_String:
+			nod->data=(char *) malloc(sizeof(BUFFER_SIZE));
+			break; 
 		case k_double:
 			nod->data=(double *) malloc(sizeof(double));
 			break;
@@ -329,4 +330,47 @@ struct node *TSNcopy(struct node *nod)
 		return NEW;
 	}
 	return NULL;
+}
+
+int TSdispose(bin_tree * table)
+{
+	TSNdispose(&table->local);
+	table->local=NULL;
+	return ERR_OK;
+
+
+}
+int TSNdispose(struct node ** mark_nod)
+{
+	if(*mark_nod!=NULL)
+	{
+		TSNdispose(&((*mark_nod)->Lnode));
+		TSNdispose(&((*mark_nod)->Rnode));
+
+
+		if((*mark_nod)->typ==k_function )
+		{
+			TSdispose(((f_data *)(*mark_nod)->f_data)->table);
+			TSFpardispose(((f_data *)(*mark_nod)->f_data)->elem);
+			free(((f_data *)(*mark_nod)->f_data)->table);
+			DisposeList(&((f_data *)(*mark_nod)->f_data)->ins_list);
+			free((*mark_nod)->f_data);
+		}
+		free((*mark_nod)->data);
+		free(*mark_nod);
+	}
+	return ERR_OK;
+}
+int TSFpardispose(struct f_elem *pList)
+{
+	struct f_elem * parameter;
+	while(pList!=NULL);
+	{
+
+		parameter=pList;
+		pList=pList->next;
+		free(parameter);
+	}
+
+	return ERR_OK;
 }
