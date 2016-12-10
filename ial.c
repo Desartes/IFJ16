@@ -143,24 +143,54 @@ void InsertLast(tList *L, tInstr instr){
 /*
 *	Funkcie na pracu s TS tabulkou/tabulkami pomocou algoritmov binnary tree
 */
+
+
+void Biteminit(binList *BL){
+	BL->first = NULL;
+	BL->last = NULL;
+	BL->active = NULL;
+}
+
+
+
+
+
+void BinInsertLast(binList *BL, bin_tree *tree){
+	struct bin_item *newItem = malloc(sizeof(struct bin_item));
+	if(newItem == NULL)
+		err(ERR_INTERNAL_ERR);
+	newItem->tree=tree;
+
+	if(BL->first != NULL){
+		BL->last->next = newItem;
+		BL->last = newItem;
+	}else
+		BL->first = BL->last = newItem;
+}
+
+
+
 void TSinit(bin_tree *table)
 {
-	table->global=table->local=NULL;
+	table->global=NULL;
+	table->local=NULL;
 }
-void TSinit_local(bin_tree *table, bin_tree *global_table)
+
+/*void TSinit_local(bin_tree *table, bin_tree *global_table)
 {
 	table->global=global_table->local;
 	table->local=NULL;
 }
+*/
 
-struct node *TSnodcreate(char *name,key typ, void *data)
+
+struct var *TSnodcreate(char *name,key typ, void *data)
 {
-	struct node *nod;
-	if((nod=malloc(sizeof(struct node)))==NULL)
+	struct var *nod;
+	if((nod=malloc(sizeof(struct var)))==NULL)
 		err(ERR_INTERNAL_ERR);
 	strncpy(nod->key_val,name,BUFFER_SIZE);
-	nod->define=false;
-	nod->f_data=nod->Rnode=nod->Lnode=NULL;
+	nod->Rnode=nod->Lnode=NULL;
 	name=NULL;
 
 	switch(typ)
@@ -212,7 +242,7 @@ struct node *TSnodcreate(char *name,key typ, void *data)
 
 }
 
-struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
+/*struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 {
 	struct node *nod;
 	if((nod=malloc(sizeof(struct node)))==NULL)
@@ -256,13 +286,13 @@ struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
 	Listinit(&((f_data *)nod->f_data)->ins_list);
 	return nod;
 }
-
-int TSinsert(bin_tree *table, struct node *in)
+*/
+int TSinsert(bin_tree *table, struct var *in)
 {
-	return TSNinsert(&table->local, in);
+	return TSNinsert(&table->global, in);
 }
 
-int TSNinsert(struct node **mark_nod, struct node *in)
+int TSNinsert(struct var **mark_nod, struct var *in)
 
 {
 	if(*mark_nod==NULL || (strcmp(in->key_val,(*mark_nod)->key_val)==ERR_OK) )
@@ -288,7 +318,7 @@ int TSNinsert(struct node **mark_nod, struct node *in)
 	}
 }
 
-struct node * TSsearch(bin_tree * table, char * key)
+/*struct node * TSsearch(bin_tree * table, char * key)
 {
 	struct node *search=TSNsearch(table->local,key);
 	if(search!=NULL)
@@ -331,8 +361,8 @@ struct node *TSNcopy(struct node *nod)
 	}
 	return NULL;
 }
-
-int TSdispose(bin_tree * table)
+*/
+/*int TSdispose(bin_tree * table)
 {
 	TSNdispose(&table->local);
 	table->local=NULL;
@@ -373,4 +403,4 @@ int TSFpardispose(struct f_elem *pList)
 	}
 
 	return ERR_OK;
-}
+}*/

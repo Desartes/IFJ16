@@ -51,57 +51,71 @@ void InsertLast(tList *L, tInstr instr);
 /*
 *	Praca s TS-tabulkou pomocou binnary tree
 */ 
-struct node
+struct var
 {
 	char key_val[BUFFER_SIZE];
-	bool define;
 	void *data;
-	void *f_data;
 	key typ;
 
-	struct node *Lnode;
-	struct node *Rnode;
+	struct var *Lnode;
+	struct var *Rnode;
 };
+
+struct func
+{
+	char key_val[BUFFER_SIZE];
+	key typ;
+
+	struct func *Lnode;
+	struct func *Rnode;
+};
+
+
 
 typedef struct
 {
-	struct node *global;
-	struct node *local;
+	struct func *local;
+	struct var *global;
 }bin_tree;
 
-struct f_elem
-{
-	char key_val[BUFFER_SIZE];
-	key typ;
-	struct f_elem *next;
-};
+typedef struct bin_item {
+  bin_tree *tree;
+  struct bin_item *next;
+} *binListitem;
 
-typedef struct 
-{
-	key ret;
-	bool define;
-	tList ins_list;
-	bin_tree *table;
-	struct f_elem *elem;
-}f_data;
+typedef struct {
+  struct bin_item *first;
+  struct bin_item *last;
+  struct bin_item *active;
+} binList;
 
-void TSinit(bin_tree *table);/*funkcie na inicializaciu prazdneho binnary tree*/
-void TSinit_local(bin_tree *table, bin_tree *global_table);
 
-struct node *TSnodcreate(char *name, key typ, void *data);/*vytvorenie uzlu pre binnary tree prva pre premenne druha pre funkcie*/
-struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem);
 
-int TSinsert(bin_tree *table, struct node *in);//priradenie uzla do binnary tree , volas len prvu druha je volana prvou
-int TSNinsert(struct node **mark_nod, struct node *in);
 
-struct node * TSsearch(bin_tree *table, char *key);//vyhladanie uzla v binnary tree, opet volas len prvu
+
+
+void Biteminit(binList *BL);
+void BinInsertLast(binList *BL, bin_tree *tree);
+
+
+void TSinit(bin_tree *table);
+struct var *TSnodcreate(char *name, key typ, void *data);/*vytvorenie uzlu pre binnary tree prva pre premenne druha pre funkcie*/
+int TSinsert(bin_tree *table, struct var *in);//priradenie uzla do binnary tree , volas len prvu druha je volana prvou
+int TSNinsert(struct var **mark_nod, struct var *in);/*funkcie na inicializaciu prazdneho binnary tree*/
+
+//void TSinit_local(bin_tree *table, bin_tree *global_table);
+
+/*struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem);
+*/
+
+/*struct node * TSsearch(bin_tree *table, char *key);//vyhladanie uzla v binnary tree, opet volas len prvu
 struct node * TSNsearch(struct node *mark_nod, char *key);
 
 int TScopy(bin_tree *table, bin_tree *N_table);//rekurzivne skopiruje cely binnary tree , opet volas len prvu
 struct node *TSNcopy(struct node *nod);
-
-int TSdispose(bin_tree * table);//odstrani cely binnary tree vratane elementov premennych pre funkcie v pliste opet volas len prvy
+*/
+/*int TSdispose(bin_tree * table);//odstrani cely binnary tree vratane elementov premennych pre funkcie v pliste opet volas len
 int TSFpardispose(struct f_elem *pList);
-int TSNdispose(struct node ** mark_nod);
+int TSNdispose(struct node ** mark_nod);*/
 
 #endif
