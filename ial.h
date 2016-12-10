@@ -132,6 +132,14 @@ struct func *TSfuncsearch(bin_tree * table, char * key);
 struct func * TSNfuncsearch(struct func *mark_nod, char *key);
 int TSFinsert(bin_tree *table, struct func *in);
 int TSNFinsert(struct func **mark_nod, struct func *in);
+/*
+*	toto je funkcia ktorou vkladas premennu alebo variabile do pola v binnary tree 
+*	f_nazov je nazov funkcie AR_nazov je nazov premennej alebo parametru 
+ *	k je pozicia v poli čiže na k si musis pametat nech to nahras vzdy na posledne miesto
+ *	g je bud 0 alebo 1 pricom 0 znaci argument a 1 premennu
+*
+*
+*/
 int TSfuncinsert(bin_tree *table,char *f_nazov,char *AR_nazov,int k,int g);
 int TSNfuncinsert(struct func **mark_nod,char *f_nazov,char *AR_nazov,int k,int g);
 
