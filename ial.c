@@ -140,6 +140,12 @@ void InsertLast(tList *L, tInstr instr){
 }
 
 
+
+
+
+
+
+
 /*
 *	Funkcie na pracu s TS tabulkou/tabulkami pomocou algoritmov binnary tree
 */
@@ -176,12 +182,6 @@ void TSinit(bin_tree *table)
 	table->local=NULL;
 }
 
-/*void TSinit_local(bin_tree *table, bin_tree *global_table)
-{
-	table->global=global_table->local;
-	table->local=NULL;
-}
-*/
 
 
 struct var *TSnodcreate(char *name,key typ, void *data)
@@ -242,17 +242,15 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 
 }
 
-/*struct node * TSFnodcreate(char * name, key typ,bool define,struct f_elem *elem)
+struct func * TSFnodcreate(char * name, key typ)
 {
-	struct node *nod;
-	if((nod=malloc(sizeof(struct node)))==NULL)
+	struct func *nod;
+	if((nod=malloc(sizeof(struct func)))==NULL)
 		err(ERR_INTERNAL_ERR);
-	nod->typ=k_function;
+	nod->typ=typ;
 	strncpy(nod->key_val,name,BUFFER_SIZE);
 	name=NULL;
 	nod->Rnode=nod->Lnode=NULL;
-	if((nod->f_data=(f_data *)malloc(sizeof(f_data)))==NULL)
-		err(ERR_INTERNAL_ERR);
 
 	switch(typ)
 	{
@@ -277,16 +275,78 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 			err(ERR_INTERNAL_ERR);
 	}
 
-	((f_data *)nod->f_data)->ret = typ;
-	((f_data *)nod->f_data)->elem = elem;
-	((f_data *)nod->f_data)->define = define;
-	if((((f_data *)nod->f_data)->table=(bin_tree *)malloc(sizeof(bin_tree)))==NULL)
-		err(ERR_INTERNAL_ERR);
-	TSinit(((f_data *)nod->f_data)->table);
-	Listinit(&((f_data *)nod->f_data)->ins_list);
 	return nod;
 }
-*/
+
+int TSFinsert(bin_tree *table, struct func *in)
+{
+	return TSNFinsert(&table->local, in);
+}
+
+int TSNFinsert(struct func **mark_nod, struct func *in)
+
+{
+	if(*mark_nod==NULL || (strcmp(in->key_val,(*mark_nod)->key_val)==ERR_OK) )
+	{
+		if(*mark_nod==NULL)
+		{
+			*mark_nod=in;
+			return ERR_OK;
+		}
+		else
+		{
+			err(ERR_INTERNAL_ERR);
+		}
+	}
+	else 
+	{
+
+		if(strcmp(in->key_val,(*mark_nod)->key_val)>ERR_OK)
+			return TSNFinsert(&(*mark_nod)->Rnode,in);
+		else
+			return TSNFinsert(&(*mark_nod)->Lnode,in);
+	}
+	return 1;
+}
+
+
+
+
+int TSfuncinsert(bin_tree *table,char *f_nazov,char *AR_nazov,int k,int g)
+{
+	return TSNfuncinsert(&table->local, f_nazov, AR_nazov,k,g);
+}
+
+int TSNfuncinsert(struct func **mark_nod,char *f_nazov, char *AR_nazov,int k,int g)
+
+{
+	if((*mark_nod)!=NULL)
+	{
+		if((strcmp(f_nazov,(*mark_nod)->key_val)==ERR_OK) )
+		{		
+			if(g==0)
+				(*mark_nod)->argum[k]=AR_nazov;
+			else
+				(*mark_nod)->premen[k]=AR_nazov;
+				return ERR_OK;
+
+		}	
+		else 
+		{
+
+			if(strcmp(f_nazov,(*mark_nod)->key_val)>ERR_OK)
+				return TSNfuncinsert(&(*mark_nod)->Rnode,f_nazov, AR_nazov,k,g );
+			else
+				return TSNfuncinsert(&(*mark_nod)->Lnode,f_nazov ,AR_nazov ,k,g);
+		}
+	}
+	else
+		return 1;
+}
+
+
+
+
 int TSinsert(bin_tree *table, struct var *in)
 {
 	return TSNinsert(&table->global, in);
@@ -318,17 +378,20 @@ int TSNinsert(struct var **mark_nod, struct var *in)
 	}
 }
 
-/*struct node * TSsearch(bin_tree * table, char * key)
+struct func *TSfuncsearch(bin_tree * table, char * key)
 {
-	struct node *search=TSNsearch(table->local,key);
-	if(search!=NULL)
+	struct func * search=TSNfuncsearch(table->local,key);
+	return search;
+}
+
+struct var * TSsearch(bin_tree * table, char * key)
+{
+	struct var *search=TSNsearch(table->global,key);
 		return search;
-	else
-		return TSNsearch(table->global,key);
 
 }
 
-struct node * TSNsearch(struct node *mark_nod, char *key)
+struct var * TSNsearch(struct var *mark_nod, char *key)
 {
 	if(mark_nod==NULL)
 		return NULL;
@@ -343,7 +406,23 @@ struct node * TSNsearch(struct node *mark_nod, char *key)
 	}
 }
 
+struct func * TSNfuncsearch(struct func *mark_nod, char *key)
+{
+	if(mark_nod==NULL)
+		return NULL;
+	if(strcmp(mark_nod->key_val,key)==ERR_OK)
+		return mark_nod;
+	else
+	{
+		if(strcmp(mark_nod->key_val,key)>ERR_OK)
+			return TSNfuncsearch(mark_nod->Lnode,key);
+		else
+			return TSNfuncsearch(mark_nod->Rnode,key);
+	}
+}
 
+
+/*
 int TScopy(bin_tree * table, bin_tree * N_table)
 {
 	N_table->global=table->global;
@@ -362,15 +441,29 @@ struct node *TSNcopy(struct node *nod)
 	return NULL;
 }
 */
-/*int TSdispose(bin_tree * table)
+int DisposeALL(binList *list)
 {
-	TSNdispose(&table->local);
+	while(list->first!=NULL)
+	{
+		TSdispose(list->first->tree);
+		struct bin_item *help;
+		help=list->first;
+		list->first=list->first->next;
+		free(help);
+	}
+	return ERR_OK;
+}
+int TSdispose(bin_tree * table)
+{
+	TSNdispose(&table->global);
+	table->global=NULL;
+	TSNFdispose(&table->local);
 	table->local=NULL;
 	return ERR_OK;
 
 
 }
-int TSNdispose(struct node ** mark_nod)
+int TSNdispose(struct var ** mark_nod)
 {
 	if(*mark_nod!=NULL)
 	{
@@ -378,29 +471,48 @@ int TSNdispose(struct node ** mark_nod)
 		TSNdispose(&((*mark_nod)->Rnode));
 
 
-		if((*mark_nod)->typ==k_function )
+		/*if((*mark_nod)->typ==k_function )
 		{
 			TSdispose(((f_data *)(*mark_nod)->f_data)->table);
 			TSFpardispose(((f_data *)(*mark_nod)->f_data)->elem);
 			free(((f_data *)(*mark_nod)->f_data)->table);
 			DisposeList(&((f_data *)(*mark_nod)->f_data)->ins_list);
 			free((*mark_nod)->f_data);
-		}
+		}*/
 		free((*mark_nod)->data);
 		free(*mark_nod);
 	}
 	return ERR_OK;
 }
-int TSFpardispose(struct f_elem *pList)
+int TSNFdispose(struct func **mark_nod)
+{
+	if(*mark_nod!=NULL)
+	{
+		TSNFdispose(&((*mark_nod)->Lnode));
+		TSNFdispose(&((*mark_nod)->Rnode));
+
+
+		/*if((*mark_nod)->typ==k_function )
+		{
+			TSdispose(((f_data *)(*mark_nod)->f_data)->table);
+			TSFpardispose(((f_data *)(*mark_nod)->f_data)->elem);
+			free(((f_data *)(*mark_nod)->f_data)->table);
+			DisposeList(&((f_data *)(*mark_nod)->f_data)->ins_list);
+			free((*mark_nod)->f_data);
+		}*/
+		free((*mark_nod)->data);
+		free(*mark_nod);
+	}
+	return ERR_OK;
+}
+/*int TSFpardispose(struct f_elem *pList)
 {
 	struct f_elem * parameter;
 	while(pList!=NULL);
 	{
-
 		parameter=pList;
 		pList=pList->next;
 		free(parameter);
 	}
-
 	return ERR_OK;
 }*/
