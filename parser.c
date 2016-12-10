@@ -24,15 +24,18 @@ int main(void)
 	// 	return -1;
 	// init_string(s);
 
-	// printf("Result of parse : %d\n", root());
+	printf("Result of parse : %d\n", root());
 
 
-	int x;
-	while( (x = get_token(f, s)) != EOF ) {
-		printf("%d String       %s\n", x, s->str);
-		printf("%d Alloc        %d\n", x, s->alloc);
-		printf("%d Length       %d\n\n", x, s->length);
-	}
+
+
+
+	// int x;
+	// while( (x = get_token(f, s)) != EOF ) {
+	// 	printf("%d String       %s\n", x, s->str);
+	// 	printf("%d Alloc        %d\n", x, s->alloc);
+	// 	printf("%d Length       %d\n\n", x, s->length);
+	// }
 
 
 
@@ -267,16 +270,7 @@ int class_body() {
 					return ERR_SYNTAX_ERR;
 			}
 
-		case is_id:
-			switch(token = get_token(f,s)) {
-				case char_LZatvorka:
-					if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
-						return class_body();
-					} else {
-						return result;
-					}
-			}
-			
+
 		case char_PMZatvorka:
 			printf("Class body : }\n");
 			return ERR_OK;
@@ -359,7 +353,9 @@ int func_body() {
 					return ERR_SYNTAX_ERR;
 			}
 
-		case is_id:
+		case is_id:{
+			string *class = malloc(sizeof(string));
+			copy_string(s, class);
 			printf("%s\n", s->str);
 			switch(token = get_token(f,s)) {
 				case char_rovnasa:
@@ -380,11 +376,64 @@ int func_body() {
 						}
 						return result;
 					}
+				case char_bodka:{
+					if (strcmp(class->str, "ifj16") == 0) {
+						switch(token = get_token(f, s)) {
+							case kw_readInt:
+							case kw_readDouble:
+							case kw_length:
+							case kw_readString:
+							case kw_print:
+							case kw_substr:
+							case kw_compare:
+							case kw_find:
+							case kw_sort:
+								switch(token = get_token(f, s)) {
+									case char_LZatvorka:
+										printf("(\n");
+										if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
+											return func_body();
+										} else {
+											return result;
+										}
+									default:
+										return ERR_SYNTAX_ERR;
+								}
+							default:
+								return ERR_SYNTAX_ERR;
+
+						}
+					} else {
+						switch(token = get_token(f,s)) {
+							case is_id:
+								switch(token = get_token(f, s)) {
+									case char_bod_ciarka:
+										return func_body();
+									case char_rovnasa:
+										if ( (result = expression_solve()) == ERR_OK ) {
+											return func_body();
+										} else {
+											return result;
+										}
+									default:
+										return ERR_SYNTAX_ERR;
+								}
+							default:
+								return ERR_SYNTAX_ERR;
+						}
+					}
+						
+
+				}
 				default:
 					printf("Error\n");
 					return ERR_SYNTAX_ERR;
 
 			}
+		}
+
+
+
 
 		case kw_while:
 		printf("While\n");

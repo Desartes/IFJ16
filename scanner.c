@@ -138,7 +138,6 @@ int compare_keywords(string *s){
 }
 
 int get_token(FILE *f,string *str){
-	int count=0;
 	int state =  State_for_start;
 	int c;
 	int next_char = 0;

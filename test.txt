@@ -1,34 +1,14 @@
 class Yay
 {
+	static int x;
 	static int blyat() {
-		while(blah) {
-			x = 4;
-
-				if(akdjh) {
-					print("meh");
-					x = y + 3;
-					while(sdf) {
-						if(sdf) {
-							x = meh;
-						} else {
-							x = meh;
-						}
-					}
-				} else {
-					program();
-				}
+		ifj16.print("sdf");
+		while(df) {
+			Meh.x = 5;
+		
 		}
-		return 9;
+		Yay.x = 5;
 	}
-	static String ahoj() {
-		x = "Ahoj svet";
-		print(x);
-	}
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
-	ahoj(fgh);
 }
 
 // Komentik vyjebany
