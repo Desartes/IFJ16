@@ -453,6 +453,7 @@ int DisposeALL(binList *list)
 }
 int TSdispose(bin_tree * table)
 {
+
 	TSNdispose(&table->global);
 	table->global=NULL;
 	TSNFdispose(&table->local);
@@ -477,6 +478,7 @@ int TSNdispose(struct var ** mark_nod)
 			DisposeList(&((f_data *)(*mark_nod)->f_data)->ins_list);
 			free((*mark_nod)->f_data);
 		}*/
+
 		free((*mark_nod)->data);
 		free(*mark_nod);
 	}
@@ -498,7 +500,8 @@ int TSNFdispose(struct func **mark_nod)
 			DisposeList(&((f_data *)(*mark_nod)->f_data)->ins_list);
 			free((*mark_nod)->f_data);
 		}*/
-		TSdispose((*mark_nod)->premen);
+		if((*mark_nod)->premen!=NULL)
+			TSdispose((*mark_nod)->premen);
 		free((*mark_nod)->data);
 		free(*mark_nod);
 	}
