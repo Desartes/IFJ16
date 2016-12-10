@@ -138,6 +138,7 @@ int compare_keywords(string *s){
 }
 
 int get_token(FILE *f,string *str){
+	int count=0;
 	int state =  State_for_start;
 	int c;
 	int next_char = 0;
@@ -227,7 +228,7 @@ int get_token(FILE *f,string *str){
 					returnVal = komentar1;
 					break;
 				}else if(c == '*'){
-					returnVal = komentar2;
+					state = komentar2;
 					break;
 				}else if(returnVal != komentar2 && returnVal != komentar1){
 					state = State_for_start;
@@ -260,6 +261,18 @@ int get_token(FILE *f,string *str){
 						returnVal = ERR_SYNTAX_ERR;
 					}
 				}
+				break;
+			case komentar2:
+				if(c == '*'){
+						c = fgetc(f);
+						if(c == '/'){
+							state = State_for_start;
+						}
+						if(c == EOF){
+							read = FALSE;
+							returnVal = ERR_SYNTAX_ERR;
+						}
+					}
 				break;
 
 			case char_mensi :
