@@ -15,30 +15,29 @@ int bool_expr();
 FILE *f;
 string *s;
 
+int main(void)
+{
+	f = fopen("test.txt","r");
+	s = malloc(sizeof(string));
 
-// int main(void)
-// {
-// 	f = fopen("test.txt","r");
-// 	s = malloc(sizeof(string));
+	// if(f == NULL || s == NULL)
+	// 	return -1;
+	// init_string(s);
 
-// 	// if(f == NULL || s == NULL)
-// 	// 	return -1;
-// 	// init_string(s);
-
-// 	// printf("Result of parse : %d\n", root());
-
-
-// 	int x;
-// 	while( (x = get_token(f, s)) != EOF ) {
-// 		printf("%d String       %s\n", x, s->str);
-// 		printf("%d Alloc        %d\n", x, s->alloc);
-// 		printf("%d Length       %d\n\n", x, s->length);
-// 	}
+	// printf("Result of parse : %d\n", root());
 
 
+	int x;
+	while( (x = get_token(f, s)) != EOF ) {
+		printf("%d String       %s\n", x, s->str);
+		printf("%d Alloc        %d\n", x, s->alloc);
+		printf("%d Length       %d\n\n", x, s->length);
+	}
 
-// 	return 0;
-// }
+
+
+	return 0;
+}
 
 
 int root() {
@@ -53,6 +52,8 @@ int root() {
 			printf("Class Success : %s\n", s->str);
 			switch( token = get_token(f,s) ) {
 				case kw_main:
+
+					// zistiť či je už main uložený SEM error -> uložiť main
 					printf("Main Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
@@ -69,6 +70,8 @@ int root() {
 					}
 
 				case is_id:
+					// zistiť či je už class id uložený SEM error -> uložiť class id
+
 					printf("ID Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
@@ -112,6 +115,8 @@ int class_body() {
 					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
+						// zistiť či je uložený sem ERR -> uložiť
+
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:

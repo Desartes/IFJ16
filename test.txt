@@ -32,7 +32,7 @@ class Yay
 }
 
 // Komentik vyjebany
-
+/*
 class Main
 {
 	static int x;
@@ -69,3 +69,4 @@ class Game
 		return;
 	} // end of static v
 }
+*/
