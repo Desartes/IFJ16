@@ -21,7 +21,7 @@ void quickSort( int[], int, int);
 int partition( int[], int, int);
 
 /*
-*	Praca s listovou strukturov opisujucov obsah funkcii
+*
 */
 typedef struct {
   int instType;
@@ -69,16 +69,7 @@ struct var
 
 
 
-struct func
-{
-	char key_val[BUFFER_SIZE];
-	key typ;
-	void *data;
-	char *premen[50];
-	char *argum[50];
-	struct func *Lnode;
-	struct func *Rnode;
-};
+
 
 typedef struct
 {
@@ -86,6 +77,15 @@ typedef struct
 	struct var *global;
 }bin_tree;
 
+struct func
+{
+	char key_val[BUFFER_SIZE];
+	key typ;
+	void *data;
+	bin_tree *premen;
+	struct func *Lnode;
+	struct func *Rnode;
+};
 
 typedef struct bin_item {
   bin_tree *tree;
@@ -135,13 +135,14 @@ int TSNFinsert(struct func **mark_nod, struct func *in);
 /*
 *	toto je funkcia ktorou vkladas premennu alebo variabile do pola v binnary tree 
 *	f_nazov je nazov funkcie AR_nazov je nazov premennej alebo parametru 
- *	k je pozicia v poli čiže na k si musis pametat nech to nahras vzdy na posledne miesto
- *	g je bud 0 alebo 1 pricom 0 znaci argument a 1 premennu
-*
-*
+*	
+*	Zavolas len prvu s nazvom funkcie do ktorej chces pridat premennu 
+ *	typom premennej datami premenej a ono to samo vytvori node a aj priradi do binnary tree premen 
+ *	akurat musis predtym vytvorit bin tree a zavolat funkciu na inicializaciu bin tree 
+ *	+ tento tree nieje v zozname(liste) bin tree odkazes sa nan len cez tu strukturu funkcie jednotlivej
 */
-int TSfuncinsert(bin_tree *table,char *f_nazov,char *AR_nazov,int k,int g);
-int TSNfuncinsert(struct func **mark_nod,char *f_nazov,char *AR_nazov,int k,int g);
+int TSfuncinsert(bin_tree *table,char *f_nazov,char *AR_nazov,key typ,void *data,bin_tree *premen);
+int TSNfuncinsert(struct func **mark_nod,char *f_nazov,char *AR_nazov,key typ,void *data,bin_tree *premen);
 
 /*
 int TScopy(bin_tree *table, bin_tree *N_table);//rekurzivne skopiruje cely binnary tree , opet volas len prvu

@@ -312,32 +312,28 @@ int TSNFinsert(struct func **mark_nod, struct func *in)
 
 
 
-int TSfuncinsert(bin_tree *table,char *f_nazov,char *AR_nazov,int k,int g)
+int TSfuncinsert(bin_tree *table,char *f_nazov,char *AR_nazov,key typ,void *data,bin_tree *premen)
 {
-	return TSNfuncinsert(&table->local, f_nazov, AR_nazov,k,g);
+	return TSNfuncinsert(&table->local, f_nazov, AR_nazov,typ,data,premen);
 }
 
-int TSNfuncinsert(struct func **mark_nod,char *f_nazov, char *AR_nazov,int k,int g)
+int TSNfuncinsert(struct func **mark_nod,char *f_nazov, char *AR_nazov,key typ,void *data,bin_tree *premen)
 
 {
 	if((*mark_nod)!=NULL)
 	{
 		if((strcmp(f_nazov,(*mark_nod)->key_val)==ERR_OK) )
 		{		
-			if(g==0)
-				(*mark_nod)->argum[k]=AR_nazov;
-			else
-				(*mark_nod)->premen[k]=AR_nazov;
+				TSinsert(premen, TSnodcreate(AR_nazov,typ, data));
 				return ERR_OK;
-
 		}	
 		else 
 		{
 
 			if(strcmp(f_nazov,(*mark_nod)->key_val)>ERR_OK)
-				return TSNfuncinsert(&(*mark_nod)->Rnode,f_nazov, AR_nazov,k,g );
+				return TSNfuncinsert(&(*mark_nod)->Rnode,f_nazov, AR_nazov,typ,data,premen);
 			else
-				return TSNfuncinsert(&(*mark_nod)->Lnode,f_nazov ,AR_nazov ,k,g);
+				return TSNfuncinsert(&(*mark_nod)->Lnode,f_nazov ,AR_nazov ,typ,data,premen);
 		}
 	}
 	else
