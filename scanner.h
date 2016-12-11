@@ -1,3 +1,8 @@
+/*******************************************************************************/
+/*Projekt:Implementace interpretu imperativniho jazyka IFJ16       											           */
+/*Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar*/
+/*Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    */
+/*******************************************************************************/
 #ifndef SCANNER_INCLUDED
 #define SCANNER_INCLUDED
 

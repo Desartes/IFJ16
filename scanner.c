@@ -1,3 +1,9 @@
+/*******************************************************************************/
+/*Projekt:Implementace interpretu imperativniho jazyka IFJ16       											           */
+/*Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip Kolesar*/
+/*Loginy riesitelov: xpobis00, xkrajc17, xgrofc00, xkoles06                    */
+/*******************************************************************************/
+
 #include "scanner.h"
 #include "err.h"
 int copy_string(string *str1,string *str2){
