@@ -36,9 +36,7 @@ int main(void)
 	classes = malloc(sizeof(binList));
 	Biteminit(classes);
 
-	printf("Result of parse : %d\n", root());
-
-	// printf("%d\n", Tree_search(classes, "Yay") != NULL );
+	printf("Result of parse : Code %d\n", root());
 
 	// char *str = "Main";
 
@@ -57,20 +55,13 @@ int main(void)
 	// TSinsert(class, oke);
 
 
-	// // printf("%d\n", (*(int *)(oke->data)) );
-	// // printf("%d\n", res );
 
-	// printf("%s\n", Tree_search(classes, str)->global->key_val );
 
-	// printf("%d\n", (*(int *)(res->data)) );
 
 
 
 	// int x;
 	// while( (x = get_token(f, s)) != EOF ) {
-	// 	printf("%d String       %s\n", x, s->str);
-	// 	printf("%d Alloc        %d\n", x, s->alloc);
-	// 	printf("%d Length       %d\n\n", x, s->length);
 	// }
 
 
@@ -90,7 +81,6 @@ int root() {
 		case kw_class: {
 			bin_tree *class = malloc(sizeof(bin_tree));
 
-			printf("Class Success : %s\n", s->str);
 			switch( token = get_token(f,s) ) {
 				case kw_main:
 
@@ -103,18 +93,14 @@ int root() {
 					current_class_name = malloc(sizeof(char) * strlen(s->str));
 					strcpy(current_class_name, s->str);
 
-					printf("Main Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
-							printf("{ Success : %d\n", token);
 							if ( (result = class_body()) == ERR_OK ) {
 								return root();
 							} else {
-								printf("Error\n");
 								return result;
 							}
 						default:
-							printf("Error %d\n", token);
 							return ERR_SYNTAX_ERR;
 					}
 
@@ -129,10 +115,8 @@ int root() {
 					current_class_name = malloc(sizeof(char) * strlen(s->str));
 					strcpy(current_class_name, s->str);
 
-					printf("ID Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
-							printf("{ Success : %d\n", token);
 							if ( (result = class_body()) == ERR_OK ) {
 								return root();
 							} else {
@@ -146,11 +130,9 @@ int root() {
 			
 		case EOF:
 			current_class = NULL;
-			printf("End of file\n");
 			return 0;
 		
 		default:
-			printf("Error : %d\n", token);
 			return ERR_SYNTAX_ERR;
 	}
 
@@ -169,14 +151,12 @@ int class_body() {
 
 	switch( (token = get_token(f, s)) ) {
 		case kw_static:
-			printf("%s\n", s->str);
 			token = get_token(f,s);
 			return_type = token;
 			struct var *new_var;
 
 			switch( token ) {
 				case kw_int:
-					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:{
 
@@ -184,7 +164,6 @@ int class_body() {
 						strcpy(current_func, s->str);
 
 
-						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:{
 									if (TSfuncsearch(current_class, current_func) != NULL) {
@@ -194,9 +173,7 @@ int class_body() {
 									struct func *newfunc = TSFnodcreate(current_func, return_type);
 									TSFinsert(current_class, newfunc);
 
-									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
-										printf("{\n");
 										if ((result = func_body()) == ERR_OK) {
 											return class_body();
 										} else {
@@ -239,14 +216,12 @@ int class_body() {
 						}
 					}
 				case kw_double:
-					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
 
 						current_func = malloc(sizeof(char) * strlen(s->str));
 						strcpy(current_func, s->str);
 						
-						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
 
@@ -257,9 +232,7 @@ int class_body() {
 									struct func *newfunc = TSFnodcreate(current_func, return_type);
 									TSFinsert(current_class, newfunc);
 
-									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
-										printf("{\n");
 										if ((result = func_body()) == ERR_OK) {
 											return class_body();
 										} else {
@@ -303,14 +276,12 @@ int class_body() {
 							return ERR_SYNTAX_ERR;
 					}
 				case kw_string:
-					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
 
 						current_func = malloc(sizeof(char) * strlen(s->str));
 						strcpy(current_func, s->str);
 
-						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:{
 
@@ -321,9 +292,7 @@ int class_body() {
 									struct func *newfunc = TSFnodcreate(current_func, return_type);
 									TSFinsert(current_class, newfunc);
 
-									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
-										printf("{\n");
 										if ((result = func_body()) == ERR_OK) {
 											return class_body();
 										} else {
@@ -367,14 +336,12 @@ int class_body() {
 							return ERR_SYNTAX_ERR;
 					}
 				case kw_void:
-					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
 
 						current_func = malloc(sizeof(char) * strlen(s->str));
 						strcpy(current_func, s->str);
 
-						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
 
@@ -385,9 +352,7 @@ int class_body() {
 									struct func *newfunc = TSFnodcreate(current_func, return_type);
 									TSFinsert(current_class, newfunc);
 
-									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
-										printf("{\n");
 										if ((result = func_body()) == ERR_OK) {
 											return class_body();
 										} else {
@@ -410,7 +375,6 @@ int class_body() {
 							current_func = malloc(sizeof(char) * strlen(s->str));
 							strcpy(current_func, s->str);
 
-							printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
 
@@ -421,9 +385,7 @@ int class_body() {
 									struct func *newfunc = TSFnodcreate(current_func, return_type);
 									TSFinsert(current_class, newfunc);
 
-									printf("(\n");
 									if( (token = get_token(f,s)) == char_PZatvorka && (token = get_token(f,s)) == char_LMZatvorka ) {
-										printf("{\n");
 										if ((result = func_body()) == ERR_OK) {
 											return class_body();
 										} else {
@@ -449,7 +411,6 @@ int class_body() {
 
 
 		case char_PMZatvorka:
-			printf("Class body : }\n");
 			return ERR_OK;
 		default:
 			return ERR_SYNTAX_ERR;
@@ -482,9 +443,7 @@ int func_params() { // ---------------------------------------------------------
 		// 	default:
 		// 		return ERR_SYNTAX_ERR;
 		// }
-		printf("Param success : %s\n", s->str);
 	}
-	printf(")\n");
 	return ERR_OK;
 }
 
@@ -512,9 +471,7 @@ int func_params() { // ---------------------------------------------------------
 // 			default:
 // 				return ERR_SYNTAX_ERR;
 // 		}
-// 		printf("Param success : %s\n", s->str);
 // 	}
-// 	printf(")\n");
 // 	return ERR_OK;
 // }
 
@@ -526,12 +483,10 @@ int func_body() {
 	int return_type;
 		token = get_token(f,s);
 		return_type = token;
-		printf("%d\n", token);
 		// struct var *new_var;
 
 	switch(token) {
 		case kw_int:
-			printf("%s\n", s->str);
 
 			switch(token = get_token(f,s)) {
 				case is_id:
@@ -540,9 +495,18 @@ int func_body() {
 				strcpy(current_var, s->str);
 
 				bin_tree *stromcek = malloc(sizeof(bin_tree));
-				TSinit(stromcek);
-				printf("%d\n", return_type);
-				TSfuncinsert(Tree_search(classes, current_class_name), current_func, current_var, return_type, NULL, stromcek);
+
+				if (Tree_search(classes, current_class_name)->local->premen == NULL) {
+					TSinit(stromcek);
+				} else {
+					stromcek = Tree_search(classes, current_class_name)->local->premen;
+				}
+
+				if (TSsearch(stromcek, current_var) != NULL ) {
+					return ERR_DEF_ERR; // redefinicia
+				}
+
+				TSfuncinsert(Tree_search(classes, current_class_name), current_func, current_var, return_type, "", stromcek);
 
 				// new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
 				// TSinsert(current_class, new_var);
@@ -558,7 +522,6 @@ int func_body() {
 				// // variable;
 
 
-				printf("%s\n", s->str);
 					switch(token = get_token(f,s)) {
 						case char_rovnasa:
 							if ( (result = expression_solve()) == ERR_OK ) {
@@ -575,10 +538,26 @@ int func_body() {
 					return ERR_SYNTAX_ERR;
 			}
 		case kw_double:
-			printf("%s\n", s->str);
 			switch(token = get_token(f,s)) {
 				case is_id:
-				printf("%s\n", s->str);
+
+				current_var = malloc(sizeof(char) * strlen(s->str));
+				strcpy(current_var, s->str);
+
+				bin_tree *stromcek = malloc(sizeof(bin_tree));
+
+				if (Tree_search(classes, current_class_name)->local->premen == NULL) {
+					TSinit(stromcek);
+				} else {
+					stromcek = Tree_search(classes, current_class_name)->local->premen;
+				}
+
+				if (TSsearch(stromcek, current_var) != NULL ) {
+					return ERR_DEF_ERR; // redefinicia
+				}
+
+				TSfuncinsert(Tree_search(classes, current_class_name), current_func, current_var, return_type, "", stromcek);
+
 					switch(token = get_token(f,s)) {
 						case char_rovnasa:
 							if ( (result = expression_solve()) == ERR_OK ) {
@@ -595,10 +574,26 @@ int func_body() {
 					return ERR_SYNTAX_ERR;
 			}
 		case kw_string:
-			printf("%s\n", s->str);
 			switch(token = get_token(f,s)) {
 				case is_id:
-				printf("%s\n", s->str);
+
+				current_var = malloc(sizeof(char) * strlen(s->str));
+				strcpy(current_var, s->str);
+
+				bin_tree *stromcek = malloc(sizeof(bin_tree));
+
+				if (Tree_search(classes, current_class_name)->local->premen == NULL) {
+					TSinit(stromcek);
+				} else {
+					stromcek = Tree_search(classes, current_class_name)->local->premen;
+				}
+
+				if (TSsearch(stromcek, current_var) != NULL ) {
+					return ERR_DEF_ERR; // redefinicia
+				}
+
+				TSfuncinsert(Tree_search(classes, current_class_name), current_func, current_var, return_type, "", stromcek);
+
 					switch(token = get_token(f,s)) {
 						case char_rovnasa:
 							if ( (result = expression_solve()) == ERR_OK ) {
@@ -618,11 +613,9 @@ int func_body() {
 		case is_id:{
 			char *class = malloc(sizeof(char) * strlen(s->str));
 			strcpy(class, s->str);
-			printf("%s\n", class);
 
 			switch(token = get_token(f,s)) {
 				case char_rovnasa:
-					printf("=\n");
 					if ( (result = expression_solve()) == ERR_OK ) {
 						return func_body();
 					} else {
@@ -630,7 +623,6 @@ int func_body() {
 					}
 
 				case char_LZatvorka:
-					printf("(\n");
 					if ( (result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka ) {
 						return func_body();
 					} else {
@@ -640,7 +632,6 @@ int func_body() {
 						return result;
 					}
 				case char_bodka:{
-					printf("%s\n", s->str);
 					if (strcmp(class, "ifj16") == 0) {
 						switch(token = get_token(f, s)) {
 							case kw_readInt:
@@ -654,7 +645,6 @@ int func_body() {
 							case kw_sort:
 								switch(token = get_token(f, s)) {
 									case char_LZatvorka:
-										printf("(\n");
 										if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
 											return func_body();
 										} else {
@@ -683,7 +673,6 @@ int func_body() {
 										}
 
 									case char_LZatvorka:
-										printf("(\n");
 										if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
 											return func_body();
 										} else {
@@ -700,19 +689,15 @@ int func_body() {
 
 				}
 				default:
-					printf("Error\n");
 					return ERR_SYNTAX_ERR;
 
 			}
 		}
 
 		case kw_while:
-		printf("While\n");
 			switch(token = get_token(f,s)) {
 				case char_LZatvorka:
-				printf("(\n");
 					if ( (result = bool_expr()) == ERR_OK && (token = get_token(f,s)) == char_LMZatvorka )	{
-						printf("{\n");
 						if ((result = func_body()) == ERR_OK) {
 							return func_body();
 						}
@@ -723,22 +708,17 @@ int func_body() {
 						return result;
 					}
 				case char_PMZatvorka:
-					printf("}\n");
 					return ERR_OK;
 				default:
 					return ERR_SYNTAX_ERR;		
 			}
 
 		case kw_if:
-		printf("IF\n");
 			switch(token = get_token(f,s)) {
 				case char_LZatvorka:
-				printf("(\n");
 					if ( (result = bool_expr()) == ERR_OK && (token = get_token(f,s)) == char_LMZatvorka )	{
-						printf("{\n");
 						if ((result = func_body()) == ERR_OK) {
 							if ((token = get_token(f,s)) == kw_else && (token = get_token(f,s)) == char_LMZatvorka) {
-								printf("ELSE\n{\n");
 								if ((result = func_body()) == ERR_OK) {
 									return func_body();
 								} else {
@@ -757,14 +737,12 @@ int func_body() {
 						return result;
 					}
 				case char_PMZatvorka:
-					printf("}\n");
 					return ERR_OK;
 				default:
 					return ERR_SYNTAX_ERR;		
 			}
 
 		case kw_return:
-			printf("return\n");
 			if ( (result = expression_solve()) == ERR_OK ) {
 			 	return func_body();
 			 } else {
@@ -772,7 +750,6 @@ int func_body() {
 			 }
 
 		case char_PMZatvorka:
-			printf("}\n");
 			return ERR_OK;
 		default:
 			return ERR_SYNTAX_ERR;
@@ -783,16 +760,12 @@ int func_body() {
 int expression_solve() { // -------------------------------------------------------------------------------------------------------- TODO
 	int token;
 	while( (token = get_token(f,s) ) != char_bod_ciarka ) {
-		printf("%s : %d\n", s->str, token);
 	}
-	printf("Success ;\n");
 	return ERR_OK;
 }
 int bool_expr() { // -------------------------------------------------------------------------------------------------------- TODO
 	int token;
 	while( (token = get_token(f,s) ) != char_PZatvorka ) {
-		printf("%s\n", s->str);
 	}
-	printf(")\n");
 	return ERR_OK;
 }

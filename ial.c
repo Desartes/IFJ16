@@ -258,7 +258,7 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 
 struct func * TSFnodcreate(char * name, key typ)
 {
-	printf("%d\n", typ);
+	// printf("%d\n", typ);
 	struct func *nod;
 	if((nod=malloc(sizeof(struct func)))==NULL)
 		err(ERR_INTERNAL_ERR);

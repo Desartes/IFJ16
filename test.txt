@@ -1,6 +1,7 @@
 class Main
 {
 	static void run() {
-		int x = 5;
+		double x;
+		double x;
 	}
 }
