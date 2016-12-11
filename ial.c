@@ -272,15 +272,31 @@ struct func * TSFnodcreate(char * name, key typ)
 	{
 		case k_boolean:
 			nod->data=(bool *) malloc(sizeof(bool));
+			if(nod->data==NULL)
+			{
+				err(ERR_INTERNAL_ERR);
+			}
 			break;
 		case k_int:
 			nod->data=(int *) malloc(sizeof(int));
+			if(nod->data==NULL)
+			{
+				err(ERR_INTERNAL_ERR);
+			}
 			break;
 		case k_String:
 			nod->data=(char *) malloc(sizeof(BUFFER_SIZE));
+			if(nod->data==NULL)
+			{
+				err(ERR_INTERNAL_ERR);
+			}
 			break; 
 		case k_double:
 			nod->data=(double *) malloc(sizeof(double));
+			if(nod->data==NULL)
+			{
+				err(ERR_INTERNAL_ERR);
+			}
 			break;
 		case k_void:
 			break;
@@ -288,11 +304,7 @@ struct func * TSFnodcreate(char * name, key typ)
 			free(nod);
 			err(ERR_INTERNAL_ERR);
 	}
-	if(nod->data==NULL)
-	{
-			err(ERR_INTERNAL_ERR);
-	}
-
+	
 	return nod;
 }
 
