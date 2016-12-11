@@ -1,0 +1,19 @@
+<root> kw_class kw_main/is_id <class_body> EOF
+
+<class_body> 1. static kw_int/kw_string/kw_double is_id char_bod_ciarka/char_rovnasa
+			 2. static kw_int/kw_string/kw_double/kw_void is_is char_LZatvorka <func_arg> char_PZatvorka char_PMZatvorka <func_body>
+			 3. char_PMZatvorka
+
+<func_arg>	 1. kw_int/kw_string/kw_double is_id
+			 2. char_ciarka
+			 3. char_PZatvorka
+
+<func body>  1. kw_int/kw_string/kw_double is_id char_rovnasa/char_bod_ciarka
+			 2. is_id char_rovnasa
+			 2. is_id char_bodka is_id char_bod_ciarka/(char_rovnasa <expression_solve>)/(char_LZatvorka <func_params> char_bod_ciarka)
+			 2. "ifj16" char_bodka kw_readInt/kw_readDouble/kw_length/kw_readString/kw_print/kw_substr/kw_compare/kw_find/kw_sort char_LZatvorka <func_params> char_bod_ciarka
+			 2. is_id char_LZatvorka <func_params> char_bod_ciarka
+			 3. kw_while char_LZatvorka <bool_expr> char_LMZatvorka <func_body>
+			 3. kw_if char_LZatvorka <bool_expr> char_LMZatvorka <func_body> kw_else charLMZatvorka
+			 4. kw_return
+			 5. char_PMZatvorka

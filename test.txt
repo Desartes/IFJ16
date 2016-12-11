@@ -2,13 +2,14 @@ class Main
 {
 	static void run() {
 		double x;
-		blyatt.x =;
+		blyatt.x;
 	}
 }
 class blyat
 {
-	staticj int y;
+	static int y;
 	static int sdfk() {
 		double x;
+		return ds;
 	}
 }
