@@ -1,3 +1,9 @@
+/*******************************************************************************/
+/*Projekt:Implementace interpretu imperativniho jazyka IFJ16       											           */
+/*Mena riesitelov: Peter Grofcik , Rastislav Pobis, Patrik Krajc , Filip Kolesar*/
+/*Loginy riesitelov: xgrofc00, xpobis00, xkrajc17, xkoles06                    */
+/*******************************************************************************/
+
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
