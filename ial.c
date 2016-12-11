@@ -281,6 +281,8 @@ struct func * TSFnodcreate(char * name, key typ)
 		case k_double:
 			nod->data=(double *) malloc(sizeof(double));
 			break;
+		case k_void:
+			break;
 		default:
 			free(nod);
 			err(ERR_INTERNAL_ERR);
