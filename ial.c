@@ -181,7 +181,6 @@ bin_tree *Tree_search(binList *BL,char *class)
 	BL->active=BL->first;
 	while(BL->active!=NULL)
 	{
-		printf("tu sa\n");
 		if(strcmp(BL->active->key_val,class)==ERR_OK)
 			return BL->active->tree;
 		BL->active=BL->active->next;
@@ -214,7 +213,6 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 			nod->data=(bool *) malloc(sizeof(bool));
 			break;
 		case k_int:
-			printf("suka\n");
 			nod->data=(int *) malloc(sizeof(int));
 			break;
 		case k_String:
@@ -235,7 +233,6 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 				*((bool *)nod->data) = *(bool *)data;
 				break;
 			case k_int:
-				printf("BLYAT\n");
 				*((int *)nod->data) = *(int *)data;
 				break;
 			case k_String:
@@ -261,6 +258,7 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 
 struct func * TSFnodcreate(char * name, key typ)
 {
+	printf("%d\n", typ);
 	struct func *nod;
 	if((nod=malloc(sizeof(struct func)))==NULL)
 		err(ERR_INTERNAL_ERR);
@@ -269,6 +267,7 @@ struct func * TSFnodcreate(char * name, key typ)
 	name=NULL;
 	nod->Rnode=nod->Lnode=NULL;
 
+	// printf("%d\n", typ);
 	switch(typ)
 	{
 		case k_boolean:

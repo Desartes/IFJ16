@@ -38,19 +38,19 @@ typedef struct
 
 typedef enum 
 {
-	k_boolean,
+	k_boolean = 104,
 	k_break,
 	k_class,
 	k_continue,
 	k_do,
-	k_double,
+	k_double = 102,
 	k_else,
 	k_false,
 	k_for,
 	k_if,
-	k_int,
+	k_int = 101,
 	k_return,
-	k_String,
+	k_String = 103,
 	k_static,
 	k_true,
 	k_void,

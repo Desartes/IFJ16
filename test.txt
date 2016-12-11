@@ -1,10 +1,23 @@
 class Yay
 {
 	static int x;
-	static int blyat() {
-		ifj16.print("sdf");
+	static void run() {
+		ifj16.print(String meh, int blyaz);
 		while(df) {
-			Meh.asdon(asd);
+			Meh.asdon(double asd);
+		
+		}
+		Yay.x = 5;
+	}
+
+}
+class Meh
+{
+	static int x;
+	static int blyat() {
+		ifj16.print(String meh, int blyaz);
+		while(df) {
+			Meh.asdon(double asd);
 		
 		}
 		Yay.x = 5;

@@ -15,6 +15,10 @@ int bool_expr();
 
 FILE *f;
 string *s;
+binList *classes;
+bin_tree *current_class;
+
+char *current_func;
 
 int main(void)
 {
@@ -25,32 +29,34 @@ int main(void)
 	// 	return -1;
 	// init_string(s);
 
+	classes = malloc(sizeof(binList));
+	Biteminit(classes);
+
 	printf("Result of parse : %d\n", root());
 
-	// binList *classes = malloc(sizeof(binList));
-	// Biteminit(classes);
+	// printf("%d\n", Tree_search(classes, "Yay") != NULL );
+
+	// char *str = "Main";
 
 
 	// int meh = 5;
 	// int k = 6;
 	// int kk = 7;
 
+
+	// bin_tree *class = malloc(sizeof(bin_tree));
+	// BinInsertLast(classes, class, str);
+
+
 	// struct var *oke;
 	// oke = TSnodcreate("x", k_int, &meh);
-	// TSinsert(tree, oke);
+	// TSinsert(class, oke);
 
-	// oke = TSnodcreate("y", k_int, &k);
-	// TSinsert(tree, oke);
-
-	// oke = TSnodcreate("z", k_int, &kk);
-	// TSinsert(tree, oke);
-
-	// struct var *res;
-	// res = TSsearch(tree, "y");
 
 	// // printf("%d\n", (*(int *)(oke->data)) );
-	// printf("%d\n", res );
+	// // printf("%d\n", res );
 
+	// printf("%s\n", Tree_search(classes, str)->global->key_val );
 
 	// printf("%d\n", (*(int *)(res->data)) );
 
@@ -77,14 +83,20 @@ int root() {
 ***********************************************************************/
 	switch( token = get_token(f,s) ) {
 
-		case kw_class:
+		case kw_class: {
+			bin_tree *class = malloc(sizeof(bin_tree));
+
 			printf("Class Success : %s\n", s->str);
 			switch( token = get_token(f,s) ) {
 				case kw_main:
-					// bin_tree *class = malloc(sizeof(bin_tree));
 
-					// find Main v liste tried, ak existuje return semanticka chyba
-					// ak neexistuje, ADD main 
+					if ( Tree_search(classes, s->str) != NULL )	{ 
+						return ERR_DEF_ERR; // pokus o redefiniciu
+					}
+
+					BinInsertLast(classes, class, s->str);
+					current_class = class;
+
 					printf("Main Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
@@ -101,8 +113,13 @@ int root() {
 					}
 
 				case is_id:
-					// find ID triedy v liste tried, ak existuje return semanticka chyba
-					// ak neexistuje, ADD ID do tried 
+					
+					if ( Tree_search(classes, s->str) != NULL )	{ 
+						return ERR_DEF_ERR; // pokus o redefiniciu
+					}
+
+					BinInsertLast(classes, class, s->str);
+					current_class = class;
 
 					printf("ID Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
@@ -117,8 +134,10 @@ int root() {
 							return ERR_SYNTAX_ERR;
 					}
 			}
+		}
 			
 		case EOF:
+			current_class = NULL;
 			printf("End of file\n");
 			return 0;
 		
@@ -138,19 +157,32 @@ int root() {
 int class_body() {
 	int token;
 	int result;
+	int return_type;
 
 	switch( (token = get_token(f, s)) ) {
 		case kw_static:
 			printf("%s\n", s->str);
-			switch( token = get_token(f,s) ) {
+			token = get_token(f,s);
+			return_type = token;
+			switch( token ) {
 				case kw_int:
 					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
+
+						current_func = malloc(sizeof(char) * strlen(s->str));
+						strcpy(current_func, s->str);
+
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
-								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
+									if (TSfuncsearch(current_class, current_func) != NULL) {
+										return ERR_DEF_ERR; // poklus or redefine
+									}
+									
+									struct func *newfunc = TSFnodcreate(current_func, return_type);
+									TSFinsert(current_class, newfunc);
+
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -181,10 +213,21 @@ int class_body() {
 					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
+
+						current_func = malloc(sizeof(char) * strlen(s->str));
+						strcpy(current_func, s->str);
+						
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
-								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
+
+									if (TSfuncsearch(current_class, current_func) != NULL) {
+										return ERR_DEF_ERR; // poklus or redefine
+									}
+									
+									struct func *newfunc = TSFnodcreate(current_func, return_type);
+									TSFinsert(current_class, newfunc);
+
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -220,10 +263,21 @@ int class_body() {
 					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
+
+						current_func = malloc(sizeof(char) * strlen(s->str));
+						strcpy(current_func, s->str);
+
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
-								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
+
+									if (TSfuncsearch(current_class, current_func) != NULL) {
+										return ERR_DEF_ERR; // poklus or redefine
+									}
+									
+									struct func *newfunc = TSFnodcreate(current_func, return_type);
+									TSFinsert(current_class, newfunc);
+
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -259,10 +313,21 @@ int class_body() {
 					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
+
+						current_func = malloc(sizeof(char) * strlen(s->str));
+						strcpy(current_func, s->str);
+
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
-								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
+
+								if (TSfuncsearch(current_class, current_func) != NULL) {
+										return ERR_DEF_ERR; // poklus or redefine
+									}
+									
+									struct func *newfunc = TSFnodcreate(current_func, return_type);
+									TSFinsert(current_class, newfunc);
+
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -284,7 +349,7 @@ int class_body() {
 								case char_LZatvorka:
 								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
 									printf("(\n");
-									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
+									if( (token = get_token(f,s)) == char_PZatvorka && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
 										if ((result = func_body()) == ERR_OK) {
 											return class_body();
@@ -319,7 +384,30 @@ int class_body() {
 }
 int func_params() { // -------------------------------------------------------------------------------------------------------- TODO
 	int token;
+	// int return_type;
 	while( (token = get_token(f,s) ) != char_PZatvorka ) {
+		switch(token) {
+			case kw_int:
+			case kw_double:
+			case kw_string:
+			case kw_boolean:
+				// return_type = token;
+				switch(token = get_token(f,s)) {
+					case is_id:
+						switch(token = get_token(f,s)) {
+							case char_ciarka:
+								continue;
+							case char_PZatvorka:
+								return ERR_OK;
+							default:
+								return ERR_SYNTAX_ERR;
+						}
+					default:
+						return ERR_OK;
+				}
+			default:
+				return ERR_SYNTAX_ERR;
+		}
 		printf("Param success : %s\n", s->str);
 	}
 	printf(")\n");
