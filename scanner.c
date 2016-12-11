@@ -138,7 +138,7 @@ int compare_keywords(string *s){
 }
 
 int get_token(FILE *f,string *str){
-	int state =  State_for_start;
+	int state =  State_for_start;	// Pociatocny stav
 	int c;
 	int next_char = 0;
 	int next_double = 0;
@@ -151,22 +151,22 @@ int get_token(FILE *f,string *str){
 		c = fgetc(f);
 		switch(state){
 			case State_for_start:
-				if(isspace(c)){}
+				if(isspace(c)){}	// biele znaky ignoruje
 				else if(isalpha(c)){
 					add_char_to_String(str,c);
 					read = TRUE;
-					state = State_for_kw;
+					state = State_for_kw;//Stav , kde sa kontroluje či ide o ID alebo KW
 				}
 				else if (isdigit(c)){
 					read = TRUE;
-					state = State_for_digit;
+					state = State_for_digit;	//Stav, pre analýzu či je to číslo alebo nie
 					add_char_to_String(str,c);
 					returnVal = is_int;
 				}
 				else if(c == '_' || c == '$'){
 					add_char_to_String(str,c);
 					read = TRUE;
-					state = State_for_id;
+					state = State_for_id; // Stav pri ktorom sa určí názov ID
 				}
 				else{
 					switch(c){
@@ -185,21 +185,18 @@ int get_token(FILE *f,string *str){
 						case '*': 	read = FALSE; 	returnVal = char_star;			break;
 						case ':':	read = FALSE;	returnVal = char_dvoj_bodka;	break;
 						case ';':	read = FALSE;	returnVal = char_bod_ciarka;	break;
-						case '%':	read = FALSE;	returnVal = char_percento;		break;
 						case '\'':	read = TRUE;	state = char_apostrof;			break;
 						case '\"':	read = TRUE;	state = char_uvodzovky;			break;
 						case '<':	read = TRUE;	state = char_mensi;				break;
 						case '>':	read = TRUE;	state = char_vacsi;				break;
 						case '=':	read = TRUE;	state = char_rovnasa;			break;
 						case '!':	read = TRUE;	state = char_vykricnik;			break;
-						case '|':	read = TRUE;	state = char_pipe;				break;
-						case '&':	read = TRUE;	state = char_amperesand;		break;
-						case '\\':	read = TRUE;	state = char_backslash;			break;
+						case '\\':	read = FALSE;	returnVal = char_backslash;		break;
 						default :	read = FALSE;	returnVal = ERR_LEX_ERR;		
 					}
 				}
 				break;
-
+// Porovna dalsi znak, ak je zhoda vráti požadovanú hodnotu , ak nie je to ten prvý znak , a odobere sa znak
 			case char_plus :
 				if(c == '+'){
 					read = FALSE;
@@ -223,6 +220,7 @@ int get_token(FILE *f,string *str){
 				break;
 
 			case char_slash:
+//Identifikácia či ide o typ riadkového alebo blokového komentáru , alebo či je to /
 				if(c == '/'){
 					returnVal = komentar1;
 					break;
@@ -234,7 +232,7 @@ int get_token(FILE *f,string *str){
 					returnVal = char_slash;
 					ungetc(c,f);
 				}
-
+//Nacitáva znaky pokial nepríde EOF alebo nový riadok
 				if(returnVal == komentar1){
 					if(c == '\n'){
 						state = State_for_start;
@@ -252,15 +250,16 @@ int get_token(FILE *f,string *str){
 						}
 						if(c == EOF){
 							read = FALSE;
-							returnVal = ERR_SYNTAX_ERR;
+							returnVal = EOF;
 						}
 					}
 					if(c == EOF){
 						read = FALSE;
-						returnVal = ERR_SYNTAX_ERR;
+						returnVal = EOF;
 					}
 				}
 				break;
+// Stav pre komentar typu /* */, preto že sa navzájom rušili (\n)
 			case komentar2:
 				if(c == '*'){
 						c = fgetc(f);
@@ -269,7 +268,7 @@ int get_token(FILE *f,string *str){
 						}
 						if(c == EOF){
 							read = FALSE;
-							returnVal = ERR_SYNTAX_ERR;
+							returnVal = EOF;
 						}
 					}
 				break;
@@ -278,9 +277,6 @@ int get_token(FILE *f,string *str){
 				if( c == '='){
 					read = FALSE;
 					returnVal = char_mensirovny;
-				}else if(c == '<'){
-					read = FALSE;
-					returnVal = posun_dolava;
 				}else{	
 					read = FALSE;
 					returnVal = char_mensi;
@@ -292,9 +288,6 @@ int get_token(FILE *f,string *str){
 				if(c == '='){
 					read = FALSE;
 					returnVal = char_vacsirovny;
-				}else if(c == '>'){
-					read = FALSE;
-					returnVal = posun_doprava;
 				}else{
 					read = FALSE;
 					returnVal = char_vacsi;
@@ -323,62 +316,14 @@ int get_token(FILE *f,string *str){
 					ungetc(c,f);
 				}
 				break;
-			case char_pipe :
-				if(c == '|'){
-					returnVal = char_or;
-					read = FALSE;
-				}else{
-					read = FALSE;
-					ungetc(c,f);
-					returnVal = char_pipe;
-				}
-				break;
-			case char_amperesand :
-				if( c =='&'){
-					read = FALSE;
-					returnVal = char_and;
-				}else{
-					read = FALSE;
-					ungetc(c,f);
-					returnVal = char_amperesand;
-				}
-				break;
-
-			case char_backslash :
-				if(c == '\\'){
-					returnVal = char_backslash;
-					read = FALSE;
-				}
-				else if(c == 't'){
-					read = FALSE;
-					returnVal = char_tab;
-				}
-				else if(c == 'n'){
-					read = FALSE;
-					returnVal = char_line;
-				}
-				else if(c == '\"'){
-					read = FALSE;
-					returnVal = print_uvodzovky;
-				}
-				else if(c == '\''){
-					read = FALSE;
-					returnVal = print_apostrof;
-				}else{
-					read = FALSE;
-					ungetc(c,f);
-					returnVal = ERR_SYNTAX_ERR;
-				}
-				break;
+			
 /**************************************************************************/
 /**************************************************************************/
-
+//Nacitáva znaky do strukty, kde následne porovna či ten retazec nieje KW
 			case State_for_kw :
 				add_char_to_String(str,c);
 					if(c == EOF){
-						read = FALSE;
-						returnVal = ERR_LEX_ERR;
-						str->str[str->length-1] ='\0';
+						err(ERR_LEX_ERR);
 					}else if(!isspecific(c)){
 						read = FALSE;
 						ungetc(c,f);
@@ -399,13 +344,12 @@ int get_token(FILE *f,string *str){
 				break;
 /**************************************************************************/
 /**************************************************************************/
-
+//Nacitávanie znakov do struktury, kým nepríde specificky znak
 				case State_for_id :
 					add_char_to_String(str,c);
 
 					if(c == EOF){
-						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 						str->str[str->length-1] ='\0';
 					}else if(!isspecific(c)){
 						read = FALSE;
@@ -424,6 +368,7 @@ int get_token(FILE *f,string *str){
 /**************************************************************************/
 			case State_for_digit :
 				add_char_to_String(str,c);
+//Ak príde znak E/e prejde do stavu is_double , kde sa vyhodnotí či je správne zadaný exponent
 				if(c == 'e' || c == 'E'){
 						read = TRUE;
 						state = is_double;
@@ -432,8 +377,7 @@ int get_token(FILE *f,string *str){
 				if(c == '.'){
 					next_double++;
 				}else if(c == EOF){
-					read = FALSE;
-					returnVal = ERR_LEX_ERR;
+					err(ERR_LEX_ERR);
 				}else if(isdigit(c)){
 					if(next_double == 1){
 						returnVal = is_double;
@@ -441,6 +385,8 @@ int get_token(FILE *f,string *str){
 						returnVal = is_int;
 					}
 				
+				}else if(next_double>1){
+					err(ERR_LEX_ERR);
 				}else{
 					read = FALSE;
 					str->str[str->length-1] ='\0';
@@ -451,6 +397,7 @@ int get_token(FILE *f,string *str){
 /**************************************************************************/
 
 			case is_double :
+			//Jediné spravne vstupy
 				if(c == '+' || c == '-' || isdigit(c) || c == '.'){
 					next_char++;
 					add_char_to_String(str,c);
@@ -462,8 +409,7 @@ int get_token(FILE *f,string *str){
 						}else if(isdigit(c)){
 							returnVal = kladny_exp;
 						}else{
-							read = FALSE;
-							returnVal = ERR_LEX_ERR;
+							err(ERR_LEX_ERR);
 						}
 					}
 					if(next_char != 1 && (c == '+' || c == '-' )){
@@ -472,6 +418,7 @@ int get_token(FILE *f,string *str){
 						str->str[str->length-1] ='\0';
 						break;
 					}
+					//pocitadlo '.' v retazci, 1=OK
 					if(c == '.'){
 						next_double++;
 						break;
@@ -509,10 +456,9 @@ int get_token(FILE *f,string *str){
 			case char_uvodzovky :
 				add_char_to_String(str,c);
 				if(c == EOF){
-					str->str[str->length-1] ='\0';
-					read = FALSE;
-					returnVal = ERR_LEX_ERR;
+					err(ERR_LEX_ERR);
 				}else if(c == '\\'){
+//Zameni specialne znaky 
 					c = fgetc(f);
 					if(c == 'n'){
 						str->str[str->length-1] = '\n';
@@ -521,17 +467,14 @@ int get_token(FILE *f,string *str){
 					}else if(c == '\''){
 						str->str[str->length-1] = '\'';
 					}else if(c == 't'){
-						str->str[str->length-1] = '\'';
+						str->str[str->length-1] = '\t';
 					}else if(c == '0'){
 						str->str[str->length-1] = '\0';
 					}else{
-						read = FALSE;
-						returnVal = ERR_LEX_ERR;	
+						err(ERR_LEX_ERR);
 					}
 				}else if(c == '\n'){
-					str->str[str->length-1] ='\0';
-					read = FALSE;
-					returnVal = ERR_LEX_ERR;
+					err(ERR_LEX_ERR);
 				}else if(c == '"'){
 					read = FALSE;
 					str->str[str->length-1] ='\0';
@@ -542,6 +485,7 @@ int get_token(FILE *f,string *str){
 /**************************************************************************/
 
 			case char_apostrof :
+//Jeden povolený znak medzi '' ,iba pri znaku \ sa nacitáva novy znak na porovnanie či ide o specialny znak
 				add_char_to_String(str,c);
 				if(c == '\\'){
 					c = fgetc(f);
@@ -561,16 +505,14 @@ int get_token(FILE *f,string *str){
 						read = FALSE;
 						str->str[0] ='\\';
 					}else{
-						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 					}
 					c = fgetc(f);
 					if(c == '\''){
 						read = FALSE;
 						returnVal = is_char;
 					}else{
-						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 					}
 
 				}else{
@@ -579,8 +521,7 @@ int get_token(FILE *f,string *str){
 						read = FALSE;
 						returnVal = is_char;
 					}else{
-						read = FALSE;
-						returnVal = ERR_LEX_ERR;
+						err(ERR_LEX_ERR);
 					}
 				}
 				break;

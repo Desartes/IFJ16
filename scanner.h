@@ -8,7 +8,7 @@
 
 #define FALSE 			0
 #define TRUE 			1
-
+//Definovanie hodnôt pre scanner returnuje
 #define char_LMZatvorka 12 // {
 #define char_PMZatvorka 11 // }
 
@@ -19,19 +19,16 @@
 #define char_PHZatvorka 31 // ]
 
 #define char_backslash  40 /* \ */ //--GOTO
-#define char_pipe		41 // |		 --GOTO
-#define char_apostrof	42 // '
 #define char_uvodzovky	43 // "
 #define char_dvoj_bodka	44 // :
 #define char_bod_ciarka	45 // ;
 #define char_ciarka 	46 // ,
-#define char_amperesand 47 // &
+#define char_apostrof	47
 #define char_star		50 // *
 #define char_plus		51 // +
 #define char_minus		52 // -
 #define char_slash      53 /* / */
 #define char_rovnasa	54 // =
-#define char_percento 	55 // %
 #define char_mensirovny 56 // <=
 #define char_vacsirovny 57 // >=
 #define char_nerovny 	58 // !=
@@ -40,14 +37,10 @@
 #define char_mensi		60 // <
 #define char_vacsi		61 // >
 #define char_vykricnik	62 // !
-#define posun_dolava	63
-#define posun_doprava	64
 
 #define char_bodka 		70 // .
 #define char_podtr		71 // _
 #define char_dolar		72 // $
-#define char_and 		73 // &&
-#define char_or 		74 // ||
 
 #define komentar1		81 // 
 #define komentar2		82 /* */
@@ -174,14 +167,21 @@ int compare_keywords(string *s);
  * @return     { description_of_the_return_value }
  */
 int copy_string(string *str1,string *str2);
-
+/**
+ * @brief      Gets the token.
+ *
+ * @param      f     { input FILE }
+ * @param      s     { struct string }
+ *
+ * @return     The token.
+ */
 int get_token(FILE *f, string *s);
 /**
  * @brief      { function_description }
  *
  * @param[in]  c     { parameter_description }
  *
- * @return     { description_of_the_return_value }
+ * @return     { 0 is specific }
  */
 int isspecific(char c);
 #endif
