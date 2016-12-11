@@ -1,6 +1,6 @@
 
 /*******************************************************************************/
-/*Projekt:Implementace interpretu imperativniho jazyka IFJ2016       											           
+/*Projekt:Implementace interpretu imperativniho jazyka IFJ16       											           
 */
 /*Mena riesitelov: Rastislav Pobis, Patrik Krajc , Peter Grofcik ,Filip 
 Kolesar*/
@@ -18,59 +18,34 @@ Kolesar*/
 #include "lex_key.h"
 
   //Funkcia na vykonanie interpretu
-int interpret(tList *intlist){
-	listFirst(intlist);//zaktivuje prvu instrukciu
+int interpret(){
+	tList *intlist;
+  listFirst(intlist);//zaktivuje prvu instrukciu
 	tInstr *I;
 while(1){
 I=listGetData(intlist);// vrati aktivni instrukci
 switch(I->instType){ //Dalej postupuje podla tipu instrukcie na vstupe
 unsigned int size, length;
 char ch;
-case I_STOP:
+case IS_STOP:
 return 0;
 break;
 //Instrukcia navestia nic nerobi
-case I_LABEL:
+case IS_LABEL:
 		
 break;
 //Instrukcia pre nacitannie do operandov
-case I_READ:
+case IS_READ:
 switch(I->typ){
       case k_int:
       if ( scanf("%d", (int *)I->addr3) != 1) return ERR_SEM_OTHER_ERR ;
 		break;
 	  case k_double:
-	  if (scanf("%lf", (double *)I->addr3) != 1) return 
-ERR_SEM_OTHER_ERR;
+	  if (scanf("%lf", (double *)I->addr3) != 1) return ERR_SEM_OTHER_ERR;
 		break;
-/*Osetrenie nacitania pre string kvoli zadefinovaniu strukturi z 
-rovnakym nazvom*/
-	  case k_String:
-	     size = 8;
-	     length = 0;
-            if ((((string *)I->addr3)->str = realloc(((string 
-*)I->addr3)->str, sizeof(char) * size)) == NULL)
-              return ERR_INTERNAL_ERR;
-            while (EOF != (ch = getchar()) && ch != '\n')
-            {
-              ((string *)I->addr3)->str[length++] = ch;
-              if (length == size)
-              {
-                if ((((string *)I->addr3)->str = realloc(((string 
-*)I->addr3)->str, sizeof(char) * (size += 8))) == NULL)
-                  return ERR_INTERNAL_ERR;
-              }
-            }
-            ((string *)I->addr3)->str[length] = '\0';
-            if ((((string *)I->addr3)->str = realloc(((string 
-*)I->addr3)->str, sizeof(char) * length)) == NULL)
-               return ERR_INTERNAL_ERR;
-            ((string *)I->addr3)->alloc = length;
-            ((string *)I->addr3)->length = length;
-            break;
-					default:
-		break;
-
+    case k_string:
+    if (scanf("%lf", (string *)I->addr3) != 1) return ERR_SEM_OTHER_ERR;
+    break;
 	}
 break;
 break;
@@ -95,26 +70,22 @@ break;
 }
 }
 //Instrukcia na scitanie operandov
- case I_ADD:
+ case IS_ADD:
 if(I->typ==k_int){
       *((int*)I->addr3) = *((int*)I->addr1) + *((int*)I->addr2);
 		
 		}
 	else if(I->typ==k_double){
-	  *((double*)I->addr3) = *((double*)I->addr1) + 
-*((double*)I->addr2);
+	  *((double*)I->addr3) = *((double*)I->addr1) + *((double*)I->addr2);
 		
 	 }
 	else if(I->typ==k_double&&I->typ==k_int){
-	  *((double*)I->addr3) = *((double*)I->addr1) + 
-*((double*)I->addr2);
+	  *((double*)I->addr3) = *((double*)I->addr1) + *((double*)I->addr2);
 		
 	 }
 	else if(I->typ==k_String){
-	    ((string *)I->addr3)->alloc = (((string *)I->addr1)->alloc + 
-((string *)I->addr2)->alloc);
-          if ((((string *)I->addr3)->str = malloc(sizeof(string) * 
-((string *)I->addr3)->alloc)) == NULL)
+	    ((string *)I->addr3)->alloc = (((string *)I->addr1)->alloc + ((string *)I->addr2)->alloc);
+          if ((((string *)I->addr3)->str = malloc(sizeof(string) * ((string *)I->addr3)->alloc)) == NULL)
             return ERR_INTERNAL_ERR;
           strcpy(((string *)I->addr3)->str, ((string *)I->addr1)->str);
           strcat(((string *)I->addr3)->str, ((string *)I->addr2)->str);
@@ -123,7 +94,7 @@ if(I->typ==k_int){
 	else return  ERR_RUNTIME_OTHER_ERR;
 		break;
 //Instrukcia pre odcitanie operandov
-  case I_SUB:
+  case IS_SUB:
 			if(I->typ==k_int)
 			{
       		*((int*)I->addr3) = *((int*)I->addr1) - 
@@ -137,7 +108,7 @@ if(I->typ==k_int){
 			else return  ERR_RUNTIME_OTHER_ERR;
 			break;
 //Instrukcia na nasobenie operandov
-    case I_MUL:
+    case IS_MUL:
 if(I->typ==k_int){
 
       *((int*)I->addr3) = *((int*)I->addr1) * *((int*)I->addr2);
@@ -155,134 +126,106 @@ if(I->typ==k_int){
 	else return  ERR_RUNTIME_OTHER_ERR;
 		break; 
 		//Instrukcia na delenie operandov
-		  	 case I_DIV:
+		  	 case IS_DIV:
    					if(I->typ==k_int)
    					{
    							if 
-(*(int*)I->addr1||*(int*)I->addr2==0)
+              (*(int*)I->addr1||*(int*)I->addr2==0)
    							{
    									
-return ERR_ZERO_DIVISION_ERR;
+                  return ERR_ZERO_DIVISION_ERR;
    							}
-      				*((int*)I->addr3) = *((int*)I->addr1) * 
-*((int*)I->addr2);
+      				*((int*)I->addr3) = *((int*)I->addr1) * *((int*)I->addr2);
       			    }
 					else if(I->typ==k_double)
 					{
-							if 
-(*(double*)I->addr1||*(double*)I->addr2==0.0)
+							if (*(double*)I->addr1||*(double*)I->addr2==0.0)
    							{
    							return 
-ERR_ZERO_DIVISION_ERR;
+        ERR_ZERO_DIVISION_ERR;
    							}
-	  						
-*((double*)I->addr3) = *((double*)I->addr1) * *((double*)I->addr2);
-					}
-					else 
-if(I->typ==k_double&&I->typ==k_int){
+	  						*((double*)I->addr3) = *((double*)I->addr1) * *((double*)I->addr2);
+					     }
+					     else 
+            if(I->typ==k_double&&I->typ==k_int){
 							if 
-(*(double*)I->addr1==0||*(double*)I->addr1==0.0||*(double*)I->addr2==0||*(double*)I->addr2==0.0)
-							{
-							return 
-ERR_ZERO_DIVISION_ERR;
+                      (*(double*)I->addr1==0||*(double*)I->addr1==0.0||*(double*)I->addr2==0||*(double*)I->addr2==0.0)
+							     {
+							return ERR_ZERO_DIVISION_ERR;
 							}
 	   }	
 	else return  ERR_RUNTIME_OTHER_ERR;
 		break; 
 		/*Instrukcia na porovnavanie operandov zo znakom LESS 
 <*/
-      	case I_LESS:
+      	case IS_LESS:
         switch(I->instType)
         {
-          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 < *(int 
-*)I->addr2; break;
-          case k_double: *(bool *)I->addr3 = *(double *)I->addr1< 
-*(double *)I->addr2; break;
-          case k_String: *(bool *)I->addr3 = (strcmp(((string 
-*)I->addr1)->str, ((string *)I->addr2)->str) < ERR_OK ); break;
-          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 < *(bool 
-*)I->addr2; break;
+          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 < *(int *)I->addr2; break;
+          case k_double: *(bool *)I->addr3 = *(double *)I->addr1< *(double *)I->addr2; break;
+          case k_String: *(bool *)I->addr3 = (strcmp(((string *)I->addr1)->str, ((string *)I->addr2)->str) < ERR_OK ); break;
+          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 < *(bool *)I->addr2; break;
           default:
             return  ERR_TYPE_COMP_ERR;
 		}
 		/*Instrukcia na porovnavainie operandov  zo znakom 
 GREATER > */
-		case I_GREATER:
+		case IS_GREATER:
         switch(I->instType)
         {
-          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 > *(int 
-*)I->addr2; break;
-          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 > 
-*(double *)I->addr2; break;
-          case k_String: *(bool *)I->addr3 = (strcmp(((string 
-*)I->addr1)->str, ((string *)I->addr2)->str) > ERR_OK ); break;
-          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 > *(bool 
-*)I->addr2; break;
+          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 > *(int *)I->addr2; break;
+          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 > *(double *)I->addr2; break;
+          case k_String: *(bool *)I->addr3 = (strcmp(((string *)I->addr1)->str, ((string *)I->addr2)->str) > ERR_OK ); break;
+          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 > *(bool *)I->addr2; break;
           default:
             return  ERR_TYPE_COMP_ERR;
 		}
 		  /*Instrukcia na porovnavainie operandov  zo znakom 
 LESSEQ <=*/
-		case  I_LESS_EQ:
+		case  IS_LESS_EQ:
         switch(I->instType)
         {
-          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 <= *(int 
-*)I->addr2; break;
-          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 <= 
-*(double *)I->addr2; break;
-          case k_String: *(bool *)I->addr3 = (strcmp(((string 
-*)I->addr1)->str, ((string *)I->addr2)->str) <= ERR_OK ); break;
-          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 <= 
-*(bool *)I->addr2; break;
+          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 <= *(int *)I->addr2; break;
+          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 <= *(double *)I->addr2; break;
+          case k_String: *(bool *)I->addr3 = (strcmp(((string *)I->addr1)->str, ((string *)I->addr2)->str) <= ERR_OK ); break;
+          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 <= *(bool *)I->addr2; break;
           default:
             return  ERR_TYPE_COMP_ERR;
 		}
 	/*Instrukcia na porovnavainie operandov zo znakom GREATERQ >=*/
-		case  I_GREAT_EQ:
+		case  IS_GREAT_EQ:
         switch(I->instType)
         {
-          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 >= *(int 
-*)I->addr2; break;
-          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 >= 
-*(double *)I->addr2; break;
-          case k_String: *(bool *)I->addr3 = (strcmp(((string 
-*)I->addr1)->str, ((string *)I->addr2)->str) >= ERR_OK ); break;
-          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 >= 
-*(bool *)I->addr2; break;
+          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 >= *(int *)I->addr2; break;
+          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 >= *(double *)I->addr2; break;
+          case k_String: *(bool *)I->addr3 = (strcmp(((string *)I->addr1)->str, ((string *)I->addr2)->str) >= ERR_OK ); break;
+          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 >= *(bool *)I->addr2; break;
           default:
             return  ERR_TYPE_COMP_ERR;
 		}
 	//Instrukcia na porovnavainie operandov e zo znakom GREATERQ 
 /*>=*/
-		case  I_EQ:
+		case  IS_EQ:
         switch(I->instType)
         {
-          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 == *(int 
-*)I->addr2; break;
-          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 == 
-*(double *)I->addr2; break;
-          case k_String: *(bool *)I->addr3 = (strcmp(((string 
-*)I->addr1)->str, ((string *)I->addr2)->str) > ERR_OK ); break;
-          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 > *(bool 
-*)I->addr2; break;
+          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 == *(int *)I->addr2; break;
+          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 == *(double *)I->addr2; break;
+          case k_String: *(bool *)I->addr3 = (strcmp(((string *)I->addr1)->str, ((string *)I->addr2)->str) > ERR_OK ); break;
+          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 > *(bool *)I->addr2; break;
           default:
             return  ERR_TYPE_COMP_ERR;
 		}
-			case  I_N_EQ:
+			case  IS_N_EQ:
         switch(I->instType)
         {
-          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 == *(int 
-*)I->addr2; break;
-          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 == 
-*(double *)I->addr2; break;
-          case k_String: *(bool *)I->addr3 = (strcmp(((string 
-*)I->addr1)->str, ((string *)I->addr2)->str) > ERR_OK ); break;
-          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 > *(bool 
-*)I->addr2; break;
+          case k_int: *(bool *)I->addr3 = *(int *)I->addr1 == *(int *)I->addr2; break;
+          case k_double: *(bool *)I->addr3 = *(double *)I->addr1 == *(double *)I->addr2; break;
+          case k_String: *(bool *)I->addr3 = (strcmp(((string *)I->addr1)->str, ((string *)I->addr2)->str) > ERR_OK ); break;
+          case k_boolean: *(bool *)I->addr3 = *(bool *)I->addr1 > *(bool *)I->addr2; break;
           default:
             return  ERR_TYPE_COMP_ERR;
 		}
-		 case  I_INC:
+		 case  IS_INC:
         switch(I->instType)
         {
           case k_int: *(int *)I->addr1 = *(int *)I->addr1 +1; break;
@@ -291,7 +234,7 @@ break;
           default:
             return  ERR_TYPE_COMP_ERR;
 		}
-		case  I_DEC:
+		case  IS_DEC:
         switch(I->instType)
         {
           case k_int: *(int *)I->addr1 = *(int *)I->addr1 -1; break;
