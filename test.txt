@@ -4,7 +4,7 @@ class Yay
 	static int blyat() {
 		ifj16.print("sdf");
 		while(df) {
-			Meh.x = 5;
+			Meh.asdon(asd);
 		
 		}
 		Yay.x = 5;

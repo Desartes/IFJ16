@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "scanner.h"
 #include "err.h"
+#include "ial.h"
 // #include "scanner.c"
 
 int root();
@@ -26,7 +27,32 @@ int main(void)
 
 	printf("Result of parse : %d\n", root());
 
+	// binList *classes = malloc(sizeof(binList));
+	// Biteminit(classes);
 
+
+	// int meh = 5;
+	// int k = 6;
+	// int kk = 7;
+
+	// struct var *oke;
+	// oke = TSnodcreate("x", k_int, &meh);
+	// TSinsert(tree, oke);
+
+	// oke = TSnodcreate("y", k_int, &k);
+	// TSinsert(tree, oke);
+
+	// oke = TSnodcreate("z", k_int, &kk);
+	// TSinsert(tree, oke);
+
+	// struct var *res;
+	// res = TSsearch(tree, "y");
+
+	// // printf("%d\n", (*(int *)(oke->data)) );
+	// printf("%d\n", res );
+
+
+	// printf("%d\n", (*(int *)(res->data)) );
 
 
 
@@ -55,8 +81,10 @@ int root() {
 			printf("Class Success : %s\n", s->str);
 			switch( token = get_token(f,s) ) {
 				case kw_main:
+					// bin_tree *class = malloc(sizeof(bin_tree));
 
-					// zistiť či je už main uložený SEM error -> uložiť main
+					// find Main v liste tried, ak existuje return semanticka chyba
+					// ak neexistuje, ADD main 
 					printf("Main Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
 						case char_LMZatvorka:
@@ -73,7 +101,8 @@ int root() {
 					}
 
 				case is_id:
-					// zistiť či je už class id uložený SEM error -> uložiť class id
+					// find ID triedy v liste tried, ak existuje return semanticka chyba
+					// ak neexistuje, ADD ID do tried 
 
 					printf("ID Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
@@ -118,11 +147,10 @@ int class_body() {
 					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
 						case is_id:
-						// zistiť či je uložený sem ERR -> uložiť
-
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
+								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -133,12 +161,14 @@ int class_body() {
 										}
 									}
 								case char_rovnasa:
+								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
 									if ( (result = expression_solve()) == ERR_OK ) {
 										return class_body();
 									} else {
 										return result;
 									}
 								case char_bod_ciarka:
+								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
 									return class_body();
 								default:
 									return ERR_SYNTAX_ERR;	 
@@ -154,6 +184,7 @@ int class_body() {
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
+								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -169,12 +200,14 @@ int class_body() {
 										return result;
 									}
 								case char_rovnasa:
+								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
 									if ( (result = expression_solve()) == ERR_OK ) {
 										return class_body();
 									} else {
 										return result;
 									}
 								case char_bod_ciarka:
+								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
 									return class_body();
 								default:
 									return ERR_SYNTAX_ERR;	
@@ -190,6 +223,7 @@ int class_body() {
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
+								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -205,12 +239,14 @@ int class_body() {
 										return result;
 									}
 								case char_rovnasa:
+								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
 									if ( (result = expression_solve()) == ERR_OK ) {
 										return class_body();
 									} else {
 										return result;
 									}
 								case char_bod_ciarka:
+								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
 									return class_body();
 								default:
 									return ERR_SYNTAX_ERR;	
@@ -226,6 +262,7 @@ int class_body() {
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
+								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -245,6 +282,7 @@ int class_body() {
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
+								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
 									printf("(\n");
 									if( ((result = func_params()) == ERR_OK) && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -415,6 +453,14 @@ int func_body() {
 										} else {
 											return result;
 										}
+
+									case char_LZatvorka:
+										printf("(\n");
+										if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
+											return func_body();
+										} else {
+											return result;
+										}
 									default:
 										return ERR_SYNTAX_ERR;
 								}
@@ -431,9 +477,6 @@ int func_body() {
 
 			}
 		}
-
-
-
 
 		case kw_while:
 		printf("While\n");

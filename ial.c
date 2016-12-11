@@ -199,6 +199,7 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 			nod->data=(bool *) malloc(sizeof(bool));
 			break;
 		case k_int:
+			printf("suka\n");
 			nod->data=(int *) malloc(sizeof(int));
 			break;
 		case k_String:
@@ -219,6 +220,7 @@ struct var *TSnodcreate(char *name,key typ, void *data)
 				*((bool *)nod->data) = *(bool *)data;
 				break;
 			case k_int:
+				printf("BLYAT\n");
 				*((int *)nod->data) = *(int *)data;
 				break;
 			case k_String:
