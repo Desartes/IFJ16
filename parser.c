@@ -487,17 +487,51 @@ int func_params() { // ---------------------------------------------------------
 	printf(")\n");
 	return ERR_OK;
 }
+
+// int func_dec_params() { // -------------------------------------------------------------------------------------------------------- TODO
+// 	int token;
+// 	while( (token = get_token(f,s) ) != char_PZatvorka ) {
+// 		switch(token) {
+// 			case kw_int:
+// 			case kw_double:
+// 			case kw_string:
+// 			case kw_boolean:
+// 				switch(token = get_token(f,s)) {
+// 					case is_id:
+// 						switch(token = get_token(f,s)) {
+// 							case char_ciarka:
+// 								continue;
+// 							case char_PZatvorka:
+// 								return ERR_OK;
+// 							default:
+// 								return ERR_SYNTAX_ERR;
+// 						}
+// 					default:
+// 						return ERR_OK;
+// 				}
+// 			default:
+// 				return ERR_SYNTAX_ERR;
+// 		}
+// 		printf("Param success : %s\n", s->str);
+// 	}
+// 	printf(")\n");
+// 	return ERR_OK;
+// }
+
+
+
 int func_body() {
 	int token;
 	int result;
 	int return_type;
-
-	switch(token = get_token(f,s)) {
+		token = get_token(f,s);
 		return_type = token;
-		struct var *new_var;
+		printf("%d\n", token);
+		// struct var *new_var;
+
+	switch(token) {
 		case kw_int:
 			printf("%s\n", s->str);
-
 
 			switch(token = get_token(f,s)) {
 				case is_id:
@@ -505,7 +539,24 @@ int func_body() {
 				current_var = malloc(sizeof(char) * strlen(s->str));
 				strcpy(current_var, s->str);
 
-					
+				bin_tree *stromcek = malloc(sizeof(bin_tree));
+				TSinit(stromcek);
+				printf("%d\n", return_type);
+				TSfuncinsert(Tree_search(classes, current_class_name), current_func, current_var, return_type, NULL, stromcek);
+
+				// new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
+				// TSinsert(current_class, new_var);
+
+
+				// bin_tree *meh;
+
+				// struct var *variable = malloc(sizeof(struct var));
+				// // variable = TSnodcreate(current_var, return_type,NULL);
+				// meh = malloc(sizeof(bin_tree));
+				// TSinit(meh);
+				// TSfuncinsert(Tree_search(classes, current_class_name)->local->premen, current_func, current_var, return_type, NULL, meh);
+				// // variable;
+
 
 				printf("%s\n", s->str);
 					switch(token = get_token(f,s)) {
