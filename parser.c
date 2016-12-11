@@ -19,6 +19,7 @@ binList *classes;
 bin_tree *current_class;
 
 char *current_func;
+char *current_class_name;
 
 int main(void)
 {
@@ -96,6 +97,8 @@ int root() {
 
 					BinInsertLast(classes, class, s->str);
 					current_class = class;
+					current_class_name = malloc(sizeof(char) * strlen(s->str));
+					strcpy(current_class_name, s->str);
 
 					printf("Main Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
@@ -120,6 +123,8 @@ int root() {
 
 					BinInsertLast(classes, class, s->str);
 					current_class = class;
+					current_class_name = malloc(sizeof(char) * strlen(s->str));
+					strcpy(current_class_name, s->str);
 
 					printf("ID Success : %s\n", s->str);
 					switch( token = get_token(f,s) ) {
@@ -344,10 +349,26 @@ int class_body() {
 									}
 							}
 						case kw_run:
-						printf("%s\n", s->str);
+							if (strcmp(current_class_name, "Main") != 0)	{
+								return ERR_DEF_ERR; // pokus o deklaraciu run() mimo Main class
+							} 
+
+
+
+							current_func = malloc(sizeof(char) * strlen(s->str));
+							strcpy(current_func, s->str);
+
+							printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
 								case char_LZatvorka:
-								// pozrieť v tabulke či existuje, ak áno, semanticka chyba, ak nie tak ho tam pridaj
+
+									if (TSfuncsearch(current_class, current_func) != NULL) {
+										return ERR_DEF_ERR; // poklus or redefine
+									}
+									
+									struct func *newfunc = TSFnodcreate(current_func, return_type);
+									TSFinsert(current_class, newfunc);
+
 									printf("(\n");
 									if( (token = get_token(f,s)) == char_PZatvorka && (token = get_token(f,s)) == char_LMZatvorka ) {
 										printf("{\n");
@@ -386,28 +407,28 @@ int func_params() { // ---------------------------------------------------------
 	int token;
 	// int return_type;
 	while( (token = get_token(f,s) ) != char_PZatvorka ) {
-		switch(token) {
-			case kw_int:
-			case kw_double:
-			case kw_string:
-			case kw_boolean:
-				// return_type = token;
-				switch(token = get_token(f,s)) {
-					case is_id:
-						switch(token = get_token(f,s)) {
-							case char_ciarka:
-								continue;
-							case char_PZatvorka:
-								return ERR_OK;
-							default:
-								return ERR_SYNTAX_ERR;
-						}
-					default:
-						return ERR_OK;
-				}
-			default:
-				return ERR_SYNTAX_ERR;
-		}
+		// switch(token) {
+		// 	case kw_int:
+		// 	case kw_double:
+		// 	case kw_string:
+		// 	case kw_boolean:
+		// 		// return_type = token;
+		// 		switch(token = get_token(f,s)) {
+		// 			case is_id:
+		// 				switch(token = get_token(f,s)) {
+		// 					case char_ciarka:
+		// 						continue;
+		// 					case char_PZatvorka:
+		// 						return ERR_OK;
+		// 					default:
+		// 						return ERR_SYNTAX_ERR;
+		// 				}
+		// 			default:
+		// 				return ERR_OK;
+		// 		}
+		// 	default:
+		// 		return ERR_SYNTAX_ERR;
+		// }
 		printf("Param success : %s\n", s->str);
 	}
 	printf(")\n");
@@ -480,9 +501,10 @@ int func_body() {
 			}
 
 		case is_id:{
-			string *class = malloc(sizeof(string));
-			copy_string(s, class);
-			printf("%s\n", s->str);
+			char *class = malloc(sizeof(char) * strlen(s->str));
+			strcpy(class, s->str);
+			printf("%s\n", class);
+
 			switch(token = get_token(f,s)) {
 				case char_rovnasa:
 					printf("=\n");
@@ -503,7 +525,8 @@ int func_body() {
 						return result;
 					}
 				case char_bodka:{
-					if (strcmp(class->str, "ifj16") == 0) {
+					printf("%s\n", s->str);
+					if (strcmp(class, "ifj16") == 0) {
 						switch(token = get_token(f, s)) {
 							case kw_readInt:
 							case kw_readDouble:

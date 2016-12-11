@@ -53,7 +53,7 @@ typedef enum
 	k_String = 103,
 	k_static,
 	k_true,
-	k_void,
+	k_void = 105,
 	k_while,
 	k_function
 }key;
