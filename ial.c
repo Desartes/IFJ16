@@ -186,6 +186,7 @@ bin_tree *Tree_search(binList *BL,char *class)
 			return BL->active->tree;
 		BL->active=BL->active->next;
 	}
+	return (bin_tree*)NULL;
 }
 
 
