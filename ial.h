@@ -89,6 +89,7 @@ struct func
 };
 
 typedef struct bin_item {
+  char key_val[BUFFER_SIZE];
   bin_tree *tree;
   struct bin_item *next;
 } *binListitem;
@@ -108,10 +109,10 @@ typedef struct {
 *
 */
 void Biteminit(binList *BL);
-void BinInsertLast(binList *BL, bin_tree *tree);
+void BinInsertLast(binList *BL, bin_tree *tree,char *class);
 
 
-
+bin_tree *Tree_search(binList *BL,char *class);
 /*
 *	funkcie na pracu s bin tree pre variabiles
 *

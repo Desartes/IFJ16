@@ -160,18 +160,32 @@ void Biteminit(binList *BL){
 
 
 
-
-void BinInsertLast(binList *BL, bin_tree *tree){
+			/*class teda zhodne asi s tree*/
+void BinInsertLast(binList *BL, bin_tree *tree,char *class){
 	struct bin_item *newItem = malloc(sizeof(struct bin_item));
 	if(newItem == NULL)
 		err(ERR_INTERNAL_ERR);
 	newItem->tree=tree;
+	strncpy(newItem->key_val,class,BUFFER_SIZE);
 
 	if(BL->first != NULL){
 		BL->last->next = newItem;
 		BL->last = newItem;
 	}else
 		BL->first = BL->last = newItem;
+}
+
+
+bin_tree *Tree_search(binList *BL,char *class)
+{
+	BL->active=BL->first;
+	while(BL->active!=NULL)
+	{
+		printf("tu sa\n");
+		if(strcmp(BL->active->key_val,class)==ERR_OK)
+			return BL->active->tree;
+		BL->active=BL->active->next;
+	}
 }
 
 
