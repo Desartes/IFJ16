@@ -42,7 +42,16 @@ int main(void)
 	classes = malloc(sizeof(binList));
 	Biteminit(classes);
 
+
 	printf("Result of parse : Code %d\n", root());
+
+	// if ( Tree_search(classes, "Main") == NULL ) {
+	// 	return ERR_DEF_ERR; // chyba main
+	// }
+	// if ( TSfuncsearch(Tree_search(classes, "Main"), "run") == NULL )
+	// {
+	// 	return ERR_DEF_ERR; // chyba run()
+	// }
 
 	// char *str = "Main";
 
@@ -615,6 +624,90 @@ int func_body() {
 				default:
 					return ERR_SYNTAX_ERR;
 			}
+
+		case kw_main:{
+			char *class = malloc(sizeof(char) * strlen(s->str));
+			strcpy(class, s->str);
+
+			switch(token = get_token(f,s)) {
+				case char_rovnasa:
+					if ( (result = expression_solve()) == ERR_OK ) {
+						return func_body();
+					} else {
+						return result;
+					}
+
+				case char_LZatvorka:
+					if ( (result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka ) {
+						return func_body();
+					} else {
+						if (token != char_bod_ciarka) {
+							return ERR_SYNTAX_ERR;
+						}
+						return result;
+					}
+				case char_bodka:{
+					if (strcmp(class, "ifj16") == 0) {
+						switch(token = get_token(f, s)) {
+							case kw_readInt:
+							case kw_readDouble:
+							case kw_length:
+							case kw_readString:
+							case kw_print:
+							case kw_substr:
+							case kw_compare:
+							case kw_find:
+							case kw_sort:
+								switch(token = get_token(f, s)) {
+									case char_LZatvorka:
+										if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
+											return func_body();
+										} else {
+											return result;
+										}
+									default:
+										return ERR_SYNTAX_ERR;
+								}
+							default:
+								return ERR_SYNTAX_ERR;
+
+						}
+					} else {
+
+						switch(token = get_token(f,s)) {
+
+							case is_id:
+								switch(token = get_token(f, s)) {
+									case char_bod_ciarka:
+										return func_body();
+									case char_rovnasa:
+										if ( (result = expression_solve()) == ERR_OK ) {
+											return func_body();
+										} else {
+											return result;
+										}
+
+									case char_LZatvorka:
+										if ((result = func_params()) == ERR_OK && (token = get_token(f,s)) == char_bod_ciarka)	{
+											return func_body();
+										} else {
+											return result;
+										}
+									default:
+										return ERR_SYNTAX_ERR;
+								}
+							default:
+								return ERR_SYNTAX_ERR;
+						}
+					}
+						
+
+				}
+				default:
+					return ERR_SYNTAX_ERR;
+
+			}
+		}
 
 		case is_id:{
 			char *class = malloc(sizeof(char) * strlen(s->str));
