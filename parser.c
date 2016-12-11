@@ -20,6 +20,9 @@ bin_tree *current_class;
 
 char *current_func;
 char *current_class_name;
+char *current_var;
+
+
 
 int main(void)
 {
@@ -169,18 +172,21 @@ int class_body() {
 			printf("%s\n", s->str);
 			token = get_token(f,s);
 			return_type = token;
+			struct var *new_var;
+
 			switch( token ) {
 				case kw_int:
 					printf("%s\n", s->str);
 					switch( token = get_token(f, s) ) {
-						case is_id:
+						case is_id:{
 
 						current_func = malloc(sizeof(char) * strlen(s->str));
 						strcpy(current_func, s->str);
 
+
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
-								case char_LZatvorka:
+								case char_LZatvorka:{
 									if (TSfuncsearch(current_class, current_func) != NULL) {
 										return ERR_DEF_ERR; // poklus or redefine
 									}
@@ -197,22 +203,40 @@ int class_body() {
 											return result;
 										}
 									}
-								case char_rovnasa:
-								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
+								}
+								case char_rovnasa:{
+
+									if( TSsearch(current_class, current_func) != NULL ) {
+										return ERR_DEF_ERR; // redefinicia premennej
+									}
+
+									new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
+									TSinsert(current_class, new_var);
+
 									if ( (result = expression_solve()) == ERR_OK ) {
 										return class_body();
 									} else {
 										return result;
 									}
-								case char_bod_ciarka:
-								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
+								}
+								case char_bod_ciarka:{
+
+									if( TSsearch(current_class, current_func) != NULL ) {
+										return ERR_DEF_ERR; // redefinicia premennej
+									}
+
+									new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
+									TSinsert(current_class, new_var);
+
 									return class_body();
+								}
 								default:
 									return ERR_SYNTAX_ERR;	 
 							}
 
 						default:
 							return ERR_SYNTAX_ERR;
+						}
 					}
 				case kw_double:
 					printf("%s\n", s->str);
@@ -248,14 +272,28 @@ int class_body() {
 										return result;
 									}
 								case char_rovnasa:
-								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
+
+									if( TSsearch(current_class, current_func) != NULL ) {
+										return ERR_DEF_ERR; // redefinicia premennej
+									}
+
+									new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
+									TSinsert(current_class, new_var);
+
+
 									if ( (result = expression_solve()) == ERR_OK ) {
 										return class_body();
 									} else {
 										return result;
 									}
 								case char_bod_ciarka:
-								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
+									if( TSsearch(current_class, current_func) != NULL ) {
+										return ERR_DEF_ERR; // redefinicia premennej
+									}
+
+									new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
+									TSinsert(current_class, new_var);
+
 									return class_body();
 								default:
 									return ERR_SYNTAX_ERR;	
@@ -274,7 +312,7 @@ int class_body() {
 
 						printf("%s\n", s->str);
 							switch( token = get_token(f,s) ) {
-								case char_LZatvorka:
+								case char_LZatvorka:{
 
 									if (TSfuncsearch(current_class, current_func) != NULL) {
 										return ERR_DEF_ERR; // poklus or redefine
@@ -297,15 +335,29 @@ int class_body() {
 										}
 										return result;
 									}
+								}
 								case char_rovnasa:
-								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
+									if( TSsearch(current_class, current_func) != NULL ) {
+										return ERR_DEF_ERR; // redefinicia premennej
+									}
+
+									new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
+									TSinsert(current_class, new_var);
+
+
 									if ( (result = expression_solve()) == ERR_OK ) {
 										return class_body();
 									} else {
 										return result;
 									}
 								case char_bod_ciarka:
-								// pozrieť do tabulky či existuje, ak áno semanticka chyba, ak nie, pridaj ho tam (premenna)
+									if( TSsearch(current_class, current_func) != NULL ) {
+										return ERR_DEF_ERR; // redefinicia premennej
+									}
+
+									new_var = TSnodcreate(current_func, return_type, ""); // priradenie premennej cez precedenčku
+									TSinsert(current_class, new_var);
+
 									return class_body();
 								default:
 									return ERR_SYNTAX_ERR;	
@@ -363,7 +415,7 @@ int class_body() {
 								case char_LZatvorka:
 
 									if (TSfuncsearch(current_class, current_func) != NULL) {
-										return ERR_DEF_ERR; // poklus or redefine
+										return ERR_DEF_ERR; // pokus or redefine
 									}
 									
 									struct func *newfunc = TSFnodcreate(current_func, return_type);
@@ -381,8 +433,9 @@ int class_body() {
 										if (token != char_LMZatvorka) {
 											return ERR_SYNTAX_ERR;
 										}
-										return result;
 									}
+								default: 
+									return ERR_SYNTAX_ERR;
 							}
 
 
@@ -437,12 +490,23 @@ int func_params() { // ---------------------------------------------------------
 int func_body() {
 	int token;
 	int result;
+	int return_type;
 
 	switch(token = get_token(f,s)) {
+		return_type = token;
+		struct var *new_var;
 		case kw_int:
 			printf("%s\n", s->str);
+
+
 			switch(token = get_token(f,s)) {
 				case is_id:
+				
+				current_var = malloc(sizeof(char) * strlen(s->str));
+				strcpy(current_var, s->str);
+
+					
+
 				printf("%s\n", s->str);
 					switch(token = get_token(f,s)) {
 						case char_rovnasa:
@@ -553,7 +617,9 @@ int func_body() {
 
 						}
 					} else {
+
 						switch(token = get_token(f,s)) {
+
 							case is_id:
 								switch(token = get_token(f, s)) {
 									case char_bod_ciarka:
