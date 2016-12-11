@@ -16,19 +16,7 @@ Kolesar*/
 #include "instr.h"
 #include "err.h"
 #include "lex_key.h"
-#define AFM 100
-void *data_g [AFM];
-//pomocna funkcia na uvolnenie data_g
- void free_data_gl(){
-	for (int i = 0; i < AFM; i++)
-	{
-			if (data_g[i]!=NULL)
-			{
-			free(data_g[i]);
-			}
-	
-	}
-  }
+
   //Funkcia na vykonanie interpretu
 int interpret(tList *intlist){
 	listFirst(intlist);//zaktivuje prvu instrukciu
@@ -319,9 +307,3 @@ listNext(intlist);
  return ERR_OK;
 }
 
-int main()
-{
-	tInstr *s;
-	interpreter(*s);
-return 0;
-}
